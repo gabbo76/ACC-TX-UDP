@@ -2,6 +2,7 @@
 
 #include "ReadData.h"
 #include "DataModel.hpp"
+#include "ClientHandler.hpp"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>
@@ -66,33 +67,10 @@ int main() {
 	// Atomic variable to check if shared memory is initialized
 	std::atomic<bool> initialized{ false };
 
-	// --- 1. SETUP RETE (WINSOCK) --- 
-	WSADATA wsaData;
-	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (iResult != 0) {
-		std::cout << "WSAStartup failed: " << iResult << std::endl;
-		return 1;
-	}
-
-	// Creazione del Socket UDP
-	SOCKET sendSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (sendSocket == INVALID_SOCKET) {
-		std::cout << "Error creating socket: " << WSAGetLastError() << std::endl;
-		WSACleanup();
-		return 1;
-	}
-
-	bool broadcastEnable = true;
-
-	int ret = setsockopt(sendSocket, SOL_SOCKET, SO_BROADCAST, (char*)&broadcastEnable, sizeof(broadcastEnable));
-	// Definizione destinazione (Localhost:9999)
-	sockaddr_in destAddr;
-	destAddr.sin_family = AF_INET;
-	destAddr.sin_port = htons(9999); // Port where the client has to connect to
-	inet_pton(AF_INET, "255.255.255.255", &destAddr.sin_addr); // Broadcast address to reach all clients in the local network MODIFY to UNICAST
+	
 
 	// Thread to listen for "down arrow" key press to exit the loop
-	std::thread readInput([&sendSocket, &exit, &initialized]() {
+	std::thread readInput([&exit, &initialized]() {
 
 		while (!exit) {
 			if (GetAsyncKeyState(VK_RCONTROL) & 0x8000) {
@@ -121,10 +99,34 @@ int main() {
 			Sleep(1000);
 		}
 	}
-
 	// Now SM is initialized
 
 	Packet payload;
+
+	// --- 1. SETUP RETE (WINSOCK) --- 
+	WSADATA wsaData;
+	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (iResult != 0) {
+		std::cout << "WSAStartup failed: " << iResult << std::endl;
+		return 1;
+	}
+
+	// Creazione del Socket UDP
+	SOCKET serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (serverSocket == INVALID_SOCKET) {
+		std::cout << "Error creating socket: " << WSAGetLastError() << std::endl;
+		WSACleanup();
+		return 1;
+	}
+
+	sockaddr_in localAddr;
+	localAddr.sin_family = AF_INET;
+	localAddr.sin_addr.s_addr = INADDR_ANY;
+	localAddr.sin_port = htons(9999); // Port where the client has to connect to
+	bind(serverSocket, (sockaddr*)&localAddr, sizeof(localAddr));
+
+	// Faccio partire il thread che ascolta
+	std::thread s_listener(listener_thread, std::ref(exit), serverSocket);
 
 	// Thread to update the data model
 	std::thread sm_reader([&exit]() {
@@ -141,7 +143,7 @@ int main() {
 
 			Sleep(16); // Sleep for 16ms to achieve ~60Hz update rate
 		}
-		});
+	});
 
 	while (!exit) {
 
@@ -159,10 +161,11 @@ int main() {
 
 	readInput.join();
 	sm_reader.join();
+	s_listener.join();
 
 	WSACleanup();
 	DismissSM();
-	closesocket(sendSocket);
+	closesocket(serverSocket);
 
 	std::cout << "Telemetry stream stopped." << std::endl;
 	return 0;

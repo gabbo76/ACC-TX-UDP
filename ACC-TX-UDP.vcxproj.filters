@@ -27,6 +27,9 @@
     <ClInclude Include="DataModel.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="ClientHandler.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,6 +42,9 @@
       <Filter>File di risorse</Filter>
     </ClCompile>
     <ClCompile Include="DataModel.cpp">
+      <Filter>File di risorse</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientHandler.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
   </ItemGroup>

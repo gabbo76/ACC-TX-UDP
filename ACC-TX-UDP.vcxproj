@@ -127,12 +127,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClientHandler.hpp" />
     <ClInclude Include="DataModel.hpp" />
     <ClInclude Include="PacketMaker.h" />
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="SharedFileOut.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientHandler.cpp" />
     <ClCompile Include="DataModel.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PacketMaker.cpp" />

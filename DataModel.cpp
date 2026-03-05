@@ -66,4 +66,4 @@ Packet DataModel::getPacket() {
     packet.waterTemp = p_snap.waterTemp;
 
     return packet;
-}         
+}
