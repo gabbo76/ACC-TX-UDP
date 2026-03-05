@@ -24,6 +24,9 @@
     <ClInclude Include="PacketMaker.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="DataModel.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,6 +36,9 @@
       <Filter>File di risorse</Filter>
     </ClCompile>
     <ClCompile Include="PacketMaker.cpp">
+      <Filter>File di risorse</Filter>
+    </ClCompile>
+    <ClCompile Include="DataModel.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
   </ItemGroup>

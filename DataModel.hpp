@@ -1,7 +1,10 @@
 #pragma once
 #include "SharedFileOut.h"
+#include "ReadData.h"
+#include <mutex>
+#include <shared_mutex>
 
-typedef struct _packet {
+struct _packet {
     float gas = 0;
     float brake = 0;
     float fuel = 0;
@@ -55,7 +58,31 @@ typedef struct _packet {
     AC_FLAG_TYPE flag = AC_NO_FLAG;
     int fuelXLap = 0;
 
-} Packet;
+};
+
+typedef struct _packet Packet;
+
+class DataModel {
+public:
+	static DataModel& getInstance();
+	DataModel(const DataModel&) = delete;
+	void operator=(const DataModel&) = delete;
+
+	// Update data
+	void updateData(SPageFileGraphic& g, SPageFilePhysics& p, SPageFileStatic& s);
+
+	// Get packet
+	Packet getPacket();
+
+private:
+	DataModel() {};
 
 
-void MakePacket(SPageFilePhysics* physicsData, SPageFileGraphic* graphicsData, SPageFileStatic* staticData, Packet* packet);
+	// Mutex for writing/reading the data
+	mutable std::shared_mutex _dataMutex;
+
+	SPageFileGraphic graphicsData;
+	SPageFilePhysics physicsData;
+	SPageFileStatic staticData;
+	Packet packet;
+};

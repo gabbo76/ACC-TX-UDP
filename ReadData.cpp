@@ -22,39 +22,39 @@ int InitSM()
 	m_physics.hMapFile = OpenFileMapping(FILE_MAP_READ, FALSE, szPhysics);
 	if (!m_physics.hMapFile)
 	{
-		return -1;
+		return 0;
 	}
 	m_physics.mapFileBuffer = (unsigned char*)MapViewOfFile(m_physics.hMapFile, FILE_MAP_READ, 0, 0, sizeof(SPageFilePhysics));
 	if (!m_physics.mapFileBuffer)
 	{
-		return -1;
+		return 0;
 	}
 
 	//INIT GRAPHIC SHARED MEMORY
 	m_graphics.hMapFile = OpenFileMapping(FILE_MAP_READ, FALSE, szGraphics);
 	if (!m_graphics.hMapFile)
 	{
-		return -1;
+		return 0;
 	}
 	m_graphics.mapFileBuffer = (unsigned char*)MapViewOfFile(m_graphics.hMapFile, FILE_MAP_READ, 0, 0, sizeof(SPageFileGraphic));
 	if (!m_graphics.mapFileBuffer)
 	{
-		return -1;
+		return 0;
 	}
 
 	//INIT STATIC SHARED MEMORY
 	m_static.hMapFile = OpenFileMapping(FILE_MAP_READ, FALSE, szStatic);
 	if (!m_static.hMapFile)
 	{
-		return -1;
+		return 0;
 	}
 	m_static.mapFileBuffer = (unsigned char*)MapViewOfFile(m_static.hMapFile, FILE_MAP_READ, 0, 0, sizeof(SPageFileStatic));
 	if (!m_static.mapFileBuffer)
 	{
-		return -1;
+		return 0;
 	}
 
-	return 0;
+	return 1;
 }
 
 void DismissSM()

@@ -127,11 +127,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DataModel.hpp" />
     <ClInclude Include="PacketMaker.h" />
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="SharedFileOut.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DataModel.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PacketMaker.cpp" />
     <ClCompile Include="ReadData.cpp" />

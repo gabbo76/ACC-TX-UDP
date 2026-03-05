@@ -1,11 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 
-/*
-*  TODO: Thread safe reading methods
- */
-
 #include "ReadData.h"
-#include "PacketMaker.h"
+#include "DataModel.hpp"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>
@@ -62,13 +58,14 @@ int main() {
 		return 1;
 	}
 
+	// Multi thread server architecture
+
 	// Atomic variabile for the loop
 	std::atomic<bool> exit{ false };
 
 	// Atomic variable to check if shared memory is initialized
 	std::atomic<bool> initialized{ false };
 
-	
 	// --- 1. SETUP RETE (WINSOCK) --- 
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -116,7 +113,7 @@ int main() {
 		std::cout << "Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;
 	}
 	while (!initialized) {
-		if (InitSM() == 0) {
+		if (InitSM() == 1) {
 			initialized = true;
 			std::cout << "Shared memory initialized successfully." << std::endl;
 		}
@@ -129,16 +126,26 @@ int main() {
 
 	Packet payload;
 
+	// Thread to update the data model
+	std::thread sm_reader([&exit]() {
+		while (!exit) {
+			SPageFileGraphic g;
+			SPageFilePhysics p;
+			SPageFileStatic s;
+			
+			ReadPhysics(&p);
+			ReadGraphics(&g);
+			ReadStatic(&s);
 
-	// when "down arrow" key is pressed exit the loop
+			DataModel::getInstance().updateData(g, p, s);
+
+			Sleep(16); // Sleep for 16ms to achieve ~60Hz update rate
+		}
+		});
+
 	while (!exit) {
-		
-		// Read data from shared memory
-		ReadGraphics(&graphicsData);
-		ReadPhysics(&physicsData);
-		ReadStatic(&staticData);
 
-		MakePacket(&physicsData, &graphicsData, &staticData, &payload);
+		payload = DataModel::getInstance().getPacket();
 
 		int bytesSent = sendto(sendSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&destAddr, sizeof(destAddr));
 
@@ -151,6 +158,7 @@ int main() {
 	}
 
 	readInput.join();
+	sm_reader.join();
 
 	WSACleanup();
 	DismissSM();
