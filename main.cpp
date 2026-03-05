@@ -145,20 +145,6 @@ int main() {
 		}
 	});
 
-	while (!exit) {
-
-		payload = DataModel::getInstance().getPacket();
-
-		int bytesSent = sendto(sendSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&destAddr, sizeof(destAddr));
-
-		if (bytesSent == SOCKET_ERROR) {
-			std::cout << "Send failed: " << WSAGetLastError() << std::endl;
-		}
-
-		Sleep(16);
-
-	}
-
 	readInput.join();
 	sm_reader.join();
 	s_listener.join();
