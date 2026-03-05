@@ -53,7 +53,7 @@ Packet DataModel::getPacket() {
         packet.tyreTempI[i] = p_snap.tyreTempI[i];
         packet.tyreTempM[i] = p_snap.tyreTempM[i];
         packet.tyreTempO[i] = p_snap.tyreTempO[i];
-        packet.suspensionDamage[i] = physip_snapcsData.suspensionDamage[i];
+        packet.suspensionDamage[i] = p_snap.suspensionDamage[i];
         packet.tyreTemp[i] = p_snap.tyreTemp[i];
         packet.brakePressure[i] = p_snap.brakePressure[i];
         packet.padLife[i] = p_snap.padLife[i];
