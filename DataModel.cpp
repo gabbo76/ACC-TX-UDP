@@ -16,43 +16,54 @@ void DataModel::updateData(SPageFileGraphic& g, SPageFilePhysics& p, SPageFileSt
 
 Packet DataModel::getPacket() {
     // Locking the mutex (more than 1 can read at the same time)
-	std::shared_lock<std::shared_mutex> lock(_dataMutex);
 
-    packet.gas = physicsData.gas;
-    packet.brake = physicsData.brake;
-    packet.fuel = physicsData.fuel;
-    packet.gear = physicsData.gear - 1;
-    packet.rpm = physicsData.rpm;
-    packet.steerAngle = physicsData.steerAngle;
-    packet.speedKmh = physicsData.speedKmh;
+    SPageFileGraphic g_snap;
+    SPageFilePhysics p_snap;
+    SPageFileStatic s_snap;
+
+	// Making a snap of the data to minimize the time we hold the lock
+    {
+        std::shared_lock<std::shared_mutex> lock(_dataMutex);
+        g_snap = graphicsData;
+        p_snap = physicsData;
+        s_snap = staticData;
+    }
+
+    packet.gas = p_snap.gas;
+    packet.brake = p_snap.brake;
+    packet.fuel = p_snap.fuel;
+    packet.gear = p_snap.gear - 1;
+    packet.rpm = p_snap.rpm;
+    packet.steerAngle = p_snap.steerAngle;
+    packet.speedKmh = p_snap.speedKmh;
           
     for (int i = 0; i < 3; i++) {
-        packet.accG[i] = physicsData.accG[i];
+        packet.accG[i] = p_snap.accG[i];
     }
     for (int i = 0; i < 4; i++) {
-        packet.wheelSlip[i] = physicsData.wheelSlip[i];
-        packet.wheelLoad[i] = physicsData.wheelLoad[i];
-        packet.wheelsPressure[i] = physicsData.wheelsPressure[i];
-        packet.wheelAngularSpeed[i] = physicsData.wheelAngularSpeed[i];
-        packet.tyreWear[i] = physicsData.tyreWear[i];
-        packet.tyreDirtyLevel[i] = physicsData.tyreDirtyLevel[i];
-        packet.tyreCoreTemperature[i] = physicsData.tyreCoreTemperature[i];
-        packet.camberRAD[i] = physicsData.camberRAD[i];
-        packet.suspensionTravel[i] = physicsData.suspensionTravel[i];
-        packet.tyreTempI[i] = physicsData.tyreTempI[i];
-        packet.tyreTempM[i] = physicsData.tyreTempM[i];
-        packet.tyreTempO[i] = physicsData.tyreTempO[i];
-        packet.suspensionDamage[i] = physicsData.suspensionDamage[i];
-        packet.tyreTemp[i] = physicsData.tyreTemp[i];
-        packet.brakePressure[i] = physicsData.brakePressure[i];
-        packet.padLife[i] = physicsData.padLife[i];
-        packet.discLife[i] = physicsData.discLife[i];
+        packet.wheelSlip[i] = p_snap.wheelSlip[i];
+        packet.wheelLoad[i] = p_snap.wheelLoad[i];
+        packet.wheelsPressure[i] = p_snap.wheelsPressure[i];
+        packet.wheelAngularSpeed[i] = p_snap.wheelAngularSpeed[i];
+        packet.tyreWear[i] = p_snap.tyreWear[i];
+        packet.tyreDirtyLevel[i] = p_snap.tyreDirtyLevel[i];
+        packet.tyreCoreTemperature[i] = p_snap.tyreCoreTemperature[i];
+        packet.camberRAD[i] = p_snap.camberRAD[i];
+        packet.suspensionTravel[i] = p_snap.suspensionTravel[i];
+        packet.tyreTempI[i] = p_snap.tyreTempI[i];
+        packet.tyreTempM[i] = p_snap.tyreTempM[i];
+        packet.tyreTempO[i] = p_snap.tyreTempO[i];
+        packet.suspensionDamage[i] = physip_snapcsData.suspensionDamage[i];
+        packet.tyreTemp[i] = p_snap.tyreTemp[i];
+        packet.brakePressure[i] = p_snap.brakePressure[i];
+        packet.padLife[i] = p_snap.padLife[i];
+        packet.discLife[i] = p_snap.discLife[i];
     }
 
-    packet.brakeBias = physicsData.brakeBias;
-    packet.tcinAction = physicsData.tcinAction;
-    packet.absInAction = physicsData.absInAction;
-    packet.waterTemp = physicsData.waterTemp;
+    packet.brakeBias = p_snap.brakeBias;
+    packet.tcinAction = p_snap.tcinAction;
+    packet.absInAction = p_snap.absInAction;
+    packet.waterTemp = p_snap.waterTemp;
 
     return packet;
 }         
