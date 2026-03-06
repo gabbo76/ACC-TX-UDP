@@ -1,4 +1,8 @@
+#define WIN32_LEAN_AND_MEAN
+
 #include "DataModel.hpp"
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
 DataModel& DataModel::getInstance() {
     // Questa riga viene eseguita SOLO la prima volta che chiami il metodo
@@ -66,4 +70,31 @@ Packet DataModel::getPacket() {
     packet.waterTemp = p_snap.waterTemp;
 
     return packet;
+}
+
+void DataModel::addClient(const sockaddr_in& clientAddr) {
+    std::lock_guard<std::mutex> lock(_clientsMutex);
+
+    // Il set gestisce automaticamente i duplicati grazie all'operatore <
+    auto result = _activeClients.insert({ clientAddr });
+
+    if (result.second) {
+        char ip[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &clientAddr.sin_addr, ip, INET_ADDRSTRLEN);
+        std::cout << "[DATAMODEL] Nuovo client registrato: " << ip
+            << ":" << ntohs(clientAddr.sin_port) << std::endl;
+    }
+}
+
+void DataModel::removeClient(const sockaddr_in& clientAddr) {
+    std::lock_guard<std::mutex> lock(_clientsMutex);
+    _activeClients.erase({ clientAddr });
+}
+
+std::set<ClientAddress> DataModel::getClients() {
+    std::lock_guard<std::mutex> lock(_clientsMutex);
+    // Restituiamo una COPIA del set. 
+    // Così il thread che invia può ciclarlo senza preoccuparsi se 
+    // nel frattempo arrivano nuovi "START".
+    return _activeClients;
 }

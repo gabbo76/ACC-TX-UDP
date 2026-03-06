@@ -34,6 +34,8 @@ int main() {
 
 	SetConsoleTitleA("ACC UDP SERVER");
 
+	std::cout << "[MAIN] Thread " << std::this_thread::get_id() << " iniziato." << std::endl;
+
 	// Instruction to exit the program
 	std::cout << "Press the right control key to exit the program." << std::endl;
 
@@ -72,6 +74,7 @@ int main() {
 	// Thread to listen for "down arrow" key press to exit the loop
 	std::thread readInput([&exit, &initialized]() {
 
+		std::cout << "[INPUT] Thread per la lettura di " << std::this_thread::get_id() << " iniziato." << std::endl;
 		while (!exit) {
 			if (GetAsyncKeyState(VK_RCONTROL) & 0x8000) {
 				exit = true;
@@ -80,6 +83,8 @@ int main() {
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
+
+		std::cout << "Exit key pressed, shutting down..." << std::endl;
 
 	});
 
@@ -123,13 +128,20 @@ int main() {
 	localAddr.sin_family = AF_INET;
 	localAddr.sin_addr.s_addr = INADDR_ANY;
 	localAddr.sin_port = htons(9999); // Port where the client has to connect to
-	bind(serverSocket, (sockaddr*)&localAddr, sizeof(localAddr));
+	if (bind(serverSocket, (sockaddr*)&localAddr, sizeof(localAddr)) == SOCKET_ERROR) {
+		std::cout << "[ERROR] Bind fallito: " << WSAGetLastError() << std::endl;
+		// Se fallisce, puliamo e usciamo, inutile lanciare i thread
+		closesocket(serverSocket);
+		WSACleanup();
+		return 1;
+	}
 
 	// Faccio partire il thread che ascolta
-	std::thread s_listener(listener_thread, std::ref(exit), serverSocket);
+	std::thread s_listener(listener_thread, std::ref(exit), std::ref(serverSocket));
 
 	// Thread to update the data model
 	std::thread sm_reader([&exit]() {
+		std::cout << "[S.M.] Thread " << std::this_thread::get_id() << " iniziato." << std::endl;
 		while (!exit) {
 			SPageFileGraphic g;
 			SPageFilePhysics p;
@@ -143,15 +155,44 @@ int main() {
 
 			Sleep(16); // Sleep for 16ms to achieve ~60Hz update rate
 		}
+
+		std::cout << "Shared memory reader thread exiting..." << std::endl;
 	});
 
+	// Active clients set
+	std::set<ClientAddress> activeClients;
+
+	// This thread sends data
+	while (!exit) {
+		payload = DataModel::getInstance().getPacket();
+
+		// Blocchiamo la lista client solo il tempo necessario per inviare
+		activeClients = DataModel::getInstance().getClients();
+		for (const auto& client : activeClients) {
+			int res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0,
+				(sockaddr*)&client.addr, sizeof(client.addr));
+
+			if (res == SOCKET_ERROR) {
+				int err = WSAGetLastError();
+				// Se vedi l'errore 10054 qui, significa che il client Python ha chiuso 
+				// o il firewall sta bloccando.
+				std::cout << "[SEND ERROR] Client irraggiungibile, errore: " << err << std::endl;
+			}
+			
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+	}
+
+	// 3. Ora che il socket è chiuso, il listener si sveglia, vede exit=true e finisce
 	readInput.join();
-	sm_reader.join();
-	s_listener.join();
+	closesocket(serverSocket);
+	if (s_listener.joinable()) s_listener.join();
+	if (sm_reader.joinable()) sm_reader.join();
 
 	WSACleanup();
 	DismissSM();
-	closesocket(serverSocket);
+
 
 	std::cout << "Telemetry stream stopped." << std::endl;
 	return 0;

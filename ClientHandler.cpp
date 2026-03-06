@@ -3,34 +3,40 @@
 #include <ws2tcpip.h>
 #include <iostream>
 
-void client_handler(sockaddr_in clientAddr, std::atomic<bool>& exit, SOCKET s) {
-    char ip[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &clientAddr.sin_addr, ip, INET_ADDRSTRLEN);
-    std::cout << "[THREAD] Gestione partita per: " << ip << std::endl;
-
-    while (!exit) {
-        
-        Packet p = DataModel::getInstance().getPacket();
-        sendto(s, (const char*)&p, sizeof(p), 0, (sockaddr*)&clientAddr, sizeof(clientAddr));
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-    }
-
-    std::cout << "[THREAD] Chiusura per: " << ip << std::endl;
-}
-
 void listener_thread(std::atomic<bool>& exit, SOCKET listenSocket) {
+    std::cout << "[Listener] Thread " << std::this_thread::get_id() << " iniziato." << std::endl;
     sockaddr_in clientAddr;
     int addrLen = sizeof(clientAddr);
     char buffer[64];
 
     while (!exit) {
-        // Aspettiamo che un client ci "bussi" (es. manda "START")
-        int bytes = recvfrom(listenSocket, buffer, sizeof(buffer), 0, (sockaddr*)&clientAddr, &addrLen);
+        int bytes = recvfrom(listenSocket, buffer, sizeof(buffer) - 1, 0, (sockaddr*)&clientAddr, &addrLen);
+        if (bytes > 0) {
+            buffer[bytes] = '\0';
+            if (strncmp(buffer, "START", 5) == 0) {
+                std::cout << "[REGISTRY] Nuovo client registrato!" << std::endl;
+                DataModel::getInstance().addClient(clientAddr);
+            }
+        }else if (bytes == 0) {
+            // UDP è connectionless, ma su alcuni sistemi bytes == 0 può indicare shutdown
+            std::cout << "[Listener] Ricevuto pacchetto vuoto o shutdown." << std::endl;
+        }else {
+            int error = WSAGetLastError();
 
-        if (bytes > 0 && buffer == "START") {
-            std::thread([clientAddr, &exit, listenSocket]() {
-                client_handler(clientAddr, exit, listenSocket);
-            }).detach();
+            // Se exit è true, l'errore è normale (abbiamo chiuso il socket dal main)
+            if (exit) {
+                std::cout << "[Listener] Chiusura programmata sbloccata." << std::endl;
+                break;
+            }
+
+            // Se arrivi qui, c'è un problema vero
+            std::cerr << "[CRITICAL] Errore recvfrom: " << error << std::endl;
+
+            // Se l'errore è 10004 (WSAEINTR), è un'interruzione esterna
+            // Se l'errore è 10038, il socket non è più un socket valido!
+            if (error == WSAENOTSOCK || error == WSAECONNRESET) {
+                break; // Esci dal loop perché il socket è andato
+            }
         }
     }
 }

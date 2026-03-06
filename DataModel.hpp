@@ -2,7 +2,20 @@
 #include "SharedFileOut.h"
 #include "ReadData.h"
 #include <mutex>
+#include <set>
 #include <shared_mutex>
+#include <WinSock2.h>
+
+struct ClientAddress {
+    sockaddr_in addr;
+
+    // Operatore necessario per std::set: ordina per IP e poi per porta
+    bool operator<(const ClientAddress& other) const {
+        if (addr.sin_addr.s_addr != other.addr.sin_addr.s_addr)
+            return addr.sin_addr.s_addr < other.addr.sin_addr.s_addr;
+        return addr.sin_port < other.addr.sin_port;
+    }
+};
 
 struct _packet {
     float gas = 0;
@@ -74,6 +87,15 @@ public:
 	// Get packet
 	Packet getPacket();
 
+    // Add client to the list
+    void addClient(const sockaddr_in& clientAddr);
+
+    // Remove a client from the list
+    void removeClient(const sockaddr_in& clientAddr);
+
+    // Restituisce una copia della lista client per l'invio (Thread-safe)
+    std::set<ClientAddress> getClients();
+
 private:
 	DataModel() {};
 
@@ -81,8 +103,13 @@ private:
 	// Mutex for writing/reading the data
 	mutable std::shared_mutex _dataMutex;
 
+    // Mutex for writing/reading the clients list
+    mutable std::mutex _clientsMutex;
+
 	SPageFileGraphic graphicsData;
 	SPageFilePhysics physicsData;
 	SPageFileStatic staticData;
 	Packet packet;
+
+    std::set<ClientAddress> _activeClients;
 };
