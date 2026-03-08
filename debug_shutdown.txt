@@ -1,0 +1,24 @@
+[DEBUG] Thread 22156 joinato.
+[DEBUG] Thread 8524 joinato.
+[DEBUG] Thread 5052 joinato.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[DEBUG] Thread 8028 joinato.
+[DEBUG] Thread 22220 joinato.
+[DEBUG] Thread 20876 joinato.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[DEBUG] Thread 9500 joinato.
+[DEBUG] Thread 24552 joinato.
+[DEBUG] Thread 20860 joinato.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[DEBUG] Thread 7392 joinato.
+[DEBUG] Thread 14044 joinato.
+[DEBUG] Thread 3084 joinato.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[DEBUG] Thread 21260 joinato.
+[DEBUG] Thread 6464 joinato.
+[DEBUG] Thread 6076 joinato.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[DEBUG] Thread 9616 joinato.
+[DEBUG] Thread 16224 joinato.
+[DEBUG] Thread 11772 joinato.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.

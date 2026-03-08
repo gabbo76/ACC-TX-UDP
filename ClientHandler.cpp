@@ -39,4 +39,6 @@ void listener_thread(std::atomic<bool>& exit, SOCKET listenSocket) {
             }
         }
     }
+
+    std::cout << "[Listener] Thread in uscita..." << std::endl;
 }

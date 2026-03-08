@@ -3,6 +3,7 @@
 #include "ReadData.h"
 #include "DataModel.hpp"
 #include "ClientHandler.hpp"
+//#include "ThreadManager.hpp"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>
@@ -10,10 +11,83 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <thread>
+#include <fstream>
+#include <sstream>
 
 #define MAX_TITLE_LENGTH 64
 
 #pragma comment(lib, "ws2_32.lib")
+
+std::vector<std::thread> registry;
+
+std::atomic<bool> canExitMain{ false };
+
+std::vector<std::thread>& getRegistry() {
+	return registry;
+}
+
+void printRegistry() {
+	std::cout << "Registry attuale: " << std::endl;
+	std::vector<std::thread>& registro = getRegistry();
+	for (int j = 0; j < registro.size(); ++j) {
+		std::stringstream ss;
+		ss << registro[j].get_id();
+		std::string threadIdStr = ss.str();
+		std::cout << "Thread " << j << ": ID " << threadIdStr << std::endl;
+	}
+
+}
+
+void LogToFile(const std::string& msg) {
+	std::ofstream logFile("debug_shutdown.txt", std::ios::app);
+	if (logFile.is_open()) {
+		logFile << msg << std::endl;
+		logFile.close();
+	}
+}
+
+std::atomic<bool>& getExitFlag() {
+	static std::atomic<bool> exitFlag{ false };
+	return exitFlag;
+}
+
+// DA PASSARE IL SOCKET "serverSocket" COME RIFERIMENTO ALL'HANDLER DI CHIUSURA
+SOCKET& getServerSocket() {
+	static SOCKET serverSocket = INVALID_SOCKET;
+	return serverSocket;
+}
+
+
+BOOL WINAPI ConsoleHandler(DWORD ctrlType) {
+	if (ctrlType == CTRL_CLOSE_EVENT) {
+		// 1. Alza la bandiera
+		auto& exit = getExitFlag();
+		exit = true;
+
+		// 2. SVEGLIA i thread bloccati (fondamentale!)
+		closesocket(getServerSocket());
+		DismissSM();
+		WSACleanup();
+		//std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
+		// 3. Aspetta i thread
+		for (int i = 0; i < registry.size(); ++i) {
+			if (registry[i].joinable()) {
+				std::stringstream ss;
+				ss << registry[i].get_id();
+				std::string threadIdStr = ss.str();
+				LogToFile("[DEBUG] Thread " + threadIdStr + " joinato.");
+				registry[i].join();
+			}
+		}
+		std::cout << "[DEBUG] Se leggi questo, la join HA FUNZIONATO." << std::endl;
+		LogToFile("[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.");
+
+		canExitMain = true;
+
+		return TRUE;
+	}
+	return FALSE;
+}
 
 void setForeground(const char* win_title) {
 	HWND my_hwnd = GetConsoleWindow();
@@ -34,10 +108,10 @@ int main() {
 
 	SetConsoleTitleA("ACC UDP SERVER");
 
-	std::cout << "[MAIN] Thread " << std::this_thread::get_id() << " iniziato." << std::endl;
-
-	// Instruction to exit the program
-	std::cout << "Press the right control key to exit the program." << std::endl;
+	// Handler to close gracefully the program when the user clicks the "X" button on the console window
+	if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
+		return 1;
+	}
 
 	const char* mutexName = "Global\\ACC_GT3_Telemetry_Mutex";
 	HANDLE hMutex = CreateMutexA(NULL, FALSE, mutexName);
@@ -61,36 +135,30 @@ int main() {
 		return 1;
 	}
 
-	// Multi thread server architecture
-
 	// Atomic variabile for the loop
-	std::atomic<bool> exit{ false };
+	auto& exit = getExitFlag();
 
 	// Atomic variable to check if shared memory is initialized
 	std::atomic<bool> initialized{ false };
 
-	
-
-	// Thread to listen for "down arrow" key press to exit the loop
-	std::thread readInput([&exit, &initialized]() {
-
-		std::cout << "[INPUT] Thread per la lettura di " << std::this_thread::get_id() << " iniziato." << std::endl;
+	// Thread to add manually new IPs
+	std::thread readInput([&exit]() {
 		while (!exit) {
+			// Controlliamo il tasto ogni 100ms
 			if (GetAsyncKeyState(VK_RCONTROL) & 0x8000) {
-				exit = true;
-				initialized = true;
-				break;
+				// Se entriamo qui, l'utente vuole inserire un IP
+				std::cout << "Ciao" << std::endl;
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
-
-		std::cout << "Exit key pressed, shutting down..." << std::endl;
-
 	});
+	registry.push_back(std::move(readInput));
 
 	SPageFileGraphic graphicsData;
 	SPageFilePhysics physicsData;
 	SPageFileStatic staticData;
+
+	printRegistry();
 
 	if (!initialized) {
 		std::cout << "Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;
@@ -100,11 +168,13 @@ int main() {
 			initialized = true;
 			std::cout << "Shared memory initialized successfully." << std::endl;
 		}
+		else if (getExitFlag()) {
+			break;
+		}
 		else {
 			Sleep(1000);
 		}
 	}
-	// Now SM is initialized
 
 	Packet payload;
 
@@ -117,7 +187,8 @@ int main() {
 	}
 
 	// Creazione del Socket UDP
-	SOCKET serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	SOCKET serverSocket = getServerSocket();
+	serverSocket =	socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (serverSocket == INVALID_SOCKET) {
 		std::cout << "Error creating socket: " << WSAGetLastError() << std::endl;
 		WSACleanup();
@@ -136,28 +207,35 @@ int main() {
 		return 1;
 	}
 
-	// Faccio partire il thread che ascolta
-	std::thread s_listener(listener_thread, std::ref(exit), std::ref(serverSocket));
 
-	// Thread to update the data model
-	std::thread sm_reader([&exit]() {
-		std::cout << "[S.M.] Thread " << std::this_thread::get_id() << " iniziato." << std::endl;
-		while (!exit) {
-			SPageFileGraphic g;
-			SPageFilePhysics p;
-			SPageFileStatic s;
-			
-			ReadPhysics(&p);
-			ReadGraphics(&g);
-			ReadStatic(&s);
+	// Faccio partire i thread (se non deve uscire subito)
+	if (initialized) {
+		// Thread to listen for new clients
+		std::thread s_listener(listener_thread, std::ref(exit), std::ref(serverSocket));
+		registry.push_back(std::move(s_listener));
 
-			DataModel::getInstance().updateData(g, p, s);
+		// Thread to update the data model
+		std::thread sm_reader([&exit]() {
+			std::cout << "[S.M.] Thread " << std::this_thread::get_id() << " iniziato." << std::endl;
+			while (!exit) {
+				SPageFileGraphic g;
+				SPageFilePhysics p;
+				SPageFileStatic s;
 
-			Sleep(16); // Sleep for 16ms to achieve ~60Hz update rate
-		}
+				ReadPhysics(&p);
+				ReadGraphics(&g);
+				ReadStatic(&s);
 
-		std::cout << "Shared memory reader thread exiting..." << std::endl;
-	});
+				DataModel::getInstance().updateData(g, p, s);
+
+				Sleep(16); // Sleep for 16ms to achieve ~60Hz update rate
+			}
+
+			std::cout << "[Shared Memory] Thread in uscita." << std::endl;
+			});
+		registry.push_back(std::move(sm_reader));
+	}
+
 
 	// Active clients set
 	std::set<ClientAddress> activeClients;
@@ -184,19 +262,10 @@ int main() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 	}
 
-	// 3. Ora che il socket è chiuso, il listener si sveglia, vede exit=true e finisce
-	readInput.join();
-	closesocket(serverSocket);
-	if (s_listener.joinable()) s_listener.join();
-	if (sm_reader.joinable()) sm_reader.join();
-
-	WSACleanup();
-	DismissSM();
-
-
-	std::cout << "Telemetry stream stopped." << std::endl;
+	while (!canExitMain) {
+		Sleep(100);
+	}
 	return 0;
-
 
 }
 

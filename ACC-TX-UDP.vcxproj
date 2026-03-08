@@ -132,6 +132,7 @@
     <ClInclude Include="PacketMaker.h" />
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="SharedFileOut.h" />
+    <ClInclude Include="ThreadManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientHandler.cpp" />
@@ -139,6 +140,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PacketMaker.cpp" />
     <ClCompile Include="ReadData.cpp" />
+    <ClCompile Include="ThreadManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
