@@ -3,7 +3,8 @@
 #include "ReadData.h"
 #include "DataModel.hpp"
 #include "ClientHandler.hpp"
-//#include "ThreadManager.hpp"
+#include "ThreadManager.hpp"
+#include "GlobalDebug.hpp"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>
@@ -11,40 +12,13 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <thread>
-#include <fstream>
 #include <sstream>
+#include <fstream>
+
 
 #define MAX_TITLE_LENGTH 64
 
 #pragma comment(lib, "ws2_32.lib")
-
-std::vector<std::thread> registry;
-
-std::atomic<bool> canExitMain{ false };
-
-std::vector<std::thread>& getRegistry() {
-	return registry;
-}
-
-void printRegistry() {
-	std::cout << "Registry attuale: " << std::endl;
-	std::vector<std::thread>& registro = getRegistry();
-	for (int j = 0; j < registro.size(); ++j) {
-		std::stringstream ss;
-		ss << registro[j].get_id();
-		std::string threadIdStr = ss.str();
-		std::cout << "Thread " << j << ": ID " << threadIdStr << std::endl;
-	}
-
-}
-
-void LogToFile(const std::string& msg) {
-	std::ofstream logFile("debug_shutdown.txt", std::ios::app);
-	if (logFile.is_open()) {
-		logFile << msg << std::endl;
-		logFile.close();
-	}
-}
 
 std::atomic<bool>& getExitFlag() {
 	static std::atomic<bool> exitFlag{ false };
@@ -68,21 +42,16 @@ BOOL WINAPI ConsoleHandler(DWORD ctrlType) {
 		closesocket(getServerSocket());
 		DismissSM();
 		WSACleanup();
-		//std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
+		std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
 		// 3. Aspetta i thread
-		for (int i = 0; i < registry.size(); ++i) {
-			if (registry[i].joinable()) {
-				std::stringstream ss;
-				ss << registry[i].get_id();
-				std::string threadIdStr = ss.str();
-				LogToFile("[DEBUG] Thread " + threadIdStr + " joinato.");
-				registry[i].join();
+		for (auto& thread : threads) {
+			if (thread.joinable()) {
+				std::cout << "[DEBUG] Joining thread " << thread.get_id() << "..." << std::endl;
+				thread.join();
 			}
 		}
 		std::cout << "[DEBUG] Se leggi questo, la join HA FUNZIONATO." << std::endl;
 		LogToFile("[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.");
-
-		canExitMain = true;
 
 		return TRUE;
 	}
@@ -107,6 +76,11 @@ void setForeground(const char* win_title) {
 int main() {
 
 	SetConsoleTitleA("ACC UDP SERVER");
+
+	std::stringstream ss;
+	ss << std::this_thread::get_id();
+	std::string threadIdStr = ss.str();
+	LogToFile("[Main] Thread " + threadIdStr + ".");
 
 	// Handler to close gracefully the program when the user clicks the "X" button on the console window
 	if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
@@ -143,6 +117,12 @@ int main() {
 
 	// Thread to add manually new IPs
 	std::thread readInput([&exit]() {
+		// Logging the thread ID for debug
+		std::stringstream ss;
+		ss << std::this_thread::get_id();
+		std::string threadIdStr = ss.str();
+		LogToFile("[ReadInput] Thread " + threadIdStr + ".");
+		
 		while (!exit) {
 			// Controlliamo il tasto ogni 100ms
 			if (GetAsyncKeyState(VK_RCONTROL) & 0x8000) {
@@ -152,13 +132,11 @@ int main() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		}
 	});
-	registry.push_back(std::move(readInput));
+	ThreadManager::getInstance().addThread(std::move(readInput));
 
 	SPageFileGraphic graphicsData;
 	SPageFilePhysics physicsData;
 	SPageFileStatic staticData;
-
-	printRegistry();
 
 	if (!initialized) {
 		std::cout << "Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;
@@ -212,11 +190,14 @@ int main() {
 	if (initialized) {
 		// Thread to listen for new clients
 		std::thread s_listener(listener_thread, std::ref(exit), std::ref(serverSocket));
-		registry.push_back(std::move(s_listener));
+		ThreadManager::getInstance().addThread(std::move(s_listener));
 
 		// Thread to update the data model
 		std::thread sm_reader([&exit]() {
-			std::cout << "[S.M.] Thread " << std::this_thread::get_id() << " iniziato." << std::endl;
+			std::stringstream ss;
+			ss << std::this_thread::get_id();
+			std::string threadIdStr = ss.str();
+			LogToFile("[S.M. Reader] Thread " + threadIdStr + ".");
 			while (!exit) {
 				SPageFileGraphic g;
 				SPageFilePhysics p;
@@ -233,7 +214,7 @@ int main() {
 
 			std::cout << "[Shared Memory] Thread in uscita." << std::endl;
 			});
-		registry.push_back(std::move(sm_reader));
+		ThreadManager::getInstance().addThread(std::move(sm_reader));
 	}
 
 
@@ -262,9 +243,6 @@ int main() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 	}
 
-	while (!canExitMain) {
-		Sleep(100);
-	}
 	return 0;
 
 }

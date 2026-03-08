@@ -1,24 +1,17 @@
-[DEBUG] Thread 22156 joinato.
-[DEBUG] Thread 8524 joinato.
-[DEBUG] Thread 5052 joinato.
-[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
-[DEBUG] Thread 8028 joinato.
-[DEBUG] Thread 22220 joinato.
-[DEBUG] Thread 20876 joinato.
-[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
-[DEBUG] Thread 9500 joinato.
-[DEBUG] Thread 24552 joinato.
-[DEBUG] Thread 20860 joinato.
-[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
-[DEBUG] Thread 7392 joinato.
-[DEBUG] Thread 14044 joinato.
-[DEBUG] Thread 3084 joinato.
-[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
-[DEBUG] Thread 21260 joinato.
-[DEBUG] Thread 6464 joinato.
-[DEBUG] Thread 6076 joinato.
-[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
-[DEBUG] Thread 9616 joinato.
-[DEBUG] Thread 16224 joinato.
-[DEBUG] Thread 11772 joinato.
-[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[Main] Thread 19712.
+[ReadInput] Thread 17296.
+[Listener] Thread 9356.
+[S.M. Reader] Thread 9964.
+[DEBUG] Thread 17296 joinato.
+[Main] Thread 20940.
+[ReadInput] Thread 4020.
+[Listener] Thread 900.
+[S.M. Reader] Thread 15216.
+[Main] Thread 22452.
+[ReadInput] Thread 2264.
+[Listener] Thread 13988.
+[S.M. Reader] Thread 22696.
+[Main] Thread 23188.
+[ReadInput] Thread 17884.
+[Listener] Thread 7152.
+[S.M. Reader] Thread 24284.

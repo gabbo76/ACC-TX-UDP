@@ -7,6 +7,7 @@
 #include <vector>
 #include <mutex>
 #include <set>
+#include "GlobalDebug.hpp"
 
 // Funzione principale che resta in ascolto di nuovi client
 void listener_thread(std::atomic<bool>& exit, SOCKET listenSocket);

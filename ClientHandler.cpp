@@ -2,9 +2,13 @@
 #include "DataModel.hpp"
 #include <ws2tcpip.h>
 #include <iostream>
+#include <sstream>
 
 void listener_thread(std::atomic<bool>& exit, SOCKET listenSocket) {
-    std::cout << "[Listener] Thread " << std::this_thread::get_id() << " iniziato." << std::endl;
+    std::stringstream ss;
+    ss << std::this_thread::get_id();
+    std::string threadIdStr = ss.str();
+    LogToFile("[Listener] Thread " + threadIdStr + ".");
     sockaddr_in clientAddr;
     int addrLen = sizeof(clientAddr);
     char buffer[64];

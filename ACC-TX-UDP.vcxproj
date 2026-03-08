@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="ClientHandler.cpp" />
     <ClCompile Include="DataModel.cpp" />
+    <ClCompile Include="GlobalDebug.hpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PacketMaker.cpp" />
     <ClCompile Include="ReadData.cpp" />

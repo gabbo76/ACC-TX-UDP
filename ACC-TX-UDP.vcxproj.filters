@@ -53,5 +53,8 @@
     <ClCompile Include="ThreadManager.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
+    <ClCompile Include="GlobalDebug.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
