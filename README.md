@@ -1,3 +1,3 @@
 # ACC-TX-UDP
 
-### Simile UDP server for Assetto Corsa Competizione data
+### Simple UDP server for Assetto Corsa Competizione data
