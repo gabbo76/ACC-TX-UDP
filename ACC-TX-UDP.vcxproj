@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="ClientHandler.hpp" />
     <ClInclude Include="DataModel.hpp" />
+    <ClInclude Include="InputReaderThread.hpp" />
     <ClInclude Include="PacketMaker.h" />
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="SharedFileOut.h" />
@@ -138,6 +139,7 @@
     <ClCompile Include="ClientHandler.cpp" />
     <ClCompile Include="DataModel.cpp" />
     <ClCompile Include="GlobalDebug.hpp" />
+    <ClCompile Include="InputReaderThread.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PacketMaker.cpp" />
     <ClCompile Include="ReadData.cpp" />

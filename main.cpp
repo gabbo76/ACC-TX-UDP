@@ -5,6 +5,7 @@
 #include "ClientHandler.hpp"
 #include "ThreadManager.hpp"
 #include "GlobalDebug.hpp"
+#include "InputReaderThread.hpp"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>
@@ -19,6 +20,8 @@
 #define MAX_TITLE_LENGTH 64
 
 #pragma comment(lib, "ws2_32.lib")
+
+HANDLE readyToExit;
 
 std::atomic<bool>& getExitFlag() {
 	static std::atomic<bool> exitFlag{ false };
@@ -38,21 +41,8 @@ BOOL WINAPI ConsoleHandler(DWORD ctrlType) {
 		auto& exit = getExitFlag();
 		exit = true;
 
-		// 2. SVEGLIA i thread bloccati (fondamentale!)
-		closesocket(getServerSocket());
-		DismissSM();
-		WSACleanup();
-		std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
-		// 3. Aspetta i thread
-		for (auto& thread : threads) {
-			if (thread.joinable()) {
-				std::cout << "[DEBUG] Joining thread " << thread.get_id() << "..." << std::endl;
-				thread.join();
-			}
-		}
-		std::cout << "[DEBUG] Se leggi questo, la join HA FUNZIONATO." << std::endl;
+		WaitForSingleObject(readyToExit, INFINITE);
 		LogToFile("[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.");
-
 		return TRUE;
 	}
 	return FALSE;
@@ -76,6 +66,9 @@ void setForeground(const char* win_title) {
 int main() {
 
 	SetConsoleTitleA("ACC UDP SERVER");
+
+	// Exit handle
+	readyToExit = CreateEventA(NULL, TRUE, FALSE, NULL);
 
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
@@ -116,22 +109,7 @@ int main() {
 	std::atomic<bool> initialized{ false };
 
 	// Thread to add manually new IPs
-	std::thread readInput([&exit]() {
-		// Logging the thread ID for debug
-		std::stringstream ss;
-		ss << std::this_thread::get_id();
-		std::string threadIdStr = ss.str();
-		LogToFile("[ReadInput] Thread " + threadIdStr + ".");
-		
-		while (!exit) {
-			// Controlliamo il tasto ogni 100ms
-			if (GetAsyncKeyState(VK_RCONTROL) & 0x8000) {
-				// Se entriamo qui, l'utente vuole inserire un IP
-				std::cout << "Ciao" << std::endl;
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		}
-	});
+	std::thread readInput(readInputThread, std::ref(exit));
 	ThreadManager::getInstance().addThread(std::move(readInput));
 
 	SPageFileGraphic graphicsData;
@@ -243,6 +221,20 @@ int main() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(16));
 	}
 
+	// Exit phase
+	closesocket(getServerSocket());
+	DismissSM();
+	WSACleanup();
+	std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
+	// 3. Aspetta i thread
+	for (auto& thread : threads) {
+		if (thread.joinable()) {
+			std::cout << "[DEBUG] Joining thread " << thread.get_id() << "..." << std::endl;
+			thread.join();
+		}
+	}
+	SetEvent(readyToExit);
+	CloseHandle(readyToExit);
 	return 0;
 
 }

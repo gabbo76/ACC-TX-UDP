@@ -15,3 +15,49 @@
 [ReadInput] Thread 17884.
 [Listener] Thread 7152.
 [S.M. Reader] Thread 24284.
+[Main] Thread 21488.
+[ReadInput] Thread 19812.
+[Listener] Thread 18672.
+[S.M. Reader] Thread 7164.
+[Main] Thread 22892.
+[ReadInput] Thread 19704.
+[Listener] Thread 15604.
+[S.M. Reader] Thread 20536.
+[Main] Thread 21484.
+[ReadInput] Thread 21440.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[Main] Thread 11476.
+[ReadInput] Thread 17620.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[Main] Thread 18396.
+[ReadInput] Thread 11644.
+[Main] Thread 17924.
+[ReadInput] Thread 2252.
+[Main] Thread 18104.
+[ReadInput] Thread 17568.
+[Main] Thread 19692.
+[ReadInput] Thread 12828.
+[Main] Thread 18924.
+[ReadInput] Thread 9124.
+[Main] Thread 8224.
+[ReadInput] Thread 21228.
+[Listener] Thread 3676.
+[S.M. Reader] Thread 13620.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[Main] Thread 1068.
+[ReadInput] Thread 11400.
+[Listener] Thread 19392.
+[S.M. Reader] Thread 22260.
+[Main] Thread 23452.
+[ReadInput] Thread 22456.
+[Listener] Thread 21716.
+[S.M. Reader] Thread 1688.
+[Main] Thread 6480.
+[ReadInput] Thread 8260.
+[Listener] Thread 14424.
+[S.M. Reader] Thread 3136.
+[Main] Thread 16716.
+[ReadInput] Thread 11064.
+[S.M. Reader] Thread 23216.
+[Main] Thread 13532.
+[ReadInput] Thread 12384.
