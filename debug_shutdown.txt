@@ -61,3 +61,97 @@
 [S.M. Reader] Thread 23216.
 [Main] Thread 13532.
 [ReadInput] Thread 12384.
+[Main] Thread 15784.
+[ReadInput] Thread 10280.
+[Main] Thread 20800.
+[ReadInput] Thread 16112.
+[Main] Thread 12672.
+[ReadInput] Thread 21992.
+[Listener] Thread 6664.
+[S.M. Reader] Thread 24128.
+[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.
+[Main] Thread 10860.
+[ReadInput] Thread 12624.
+[Listener] Thread 9432.
+[S.M. Reader] Thread 12368.
+[Main] Thread 17792.
+[ReadInput] Thread 21940.
+[Listener] Thread 11220.
+[S.M. Reader] Thread 21336.
+[Main] Thread 1708.
+[ReadInput] Thread 14348.
+[S.M. Reader] Thread 23112.
+[Main] Thread 2148.
+[ReadInput] Thread 6320.
+[Listener] Thread 1496.
+[S.M. Reader] Thread 18048.
+[Main] Thread 23580.
+[ReadInput] Thread 17920.
+[Listener] Thread 23736.
+[S.M. Reader] Thread 14560.
+[Main] Thread 2856.
+[ReadInput] Thread 19140.
+[Listener] Thread 452.
+[S.M. Reader] Thread 1388.
+[Main] Thread 3748.
+[ReadInput] Thread 7248.
+[Listener] Thread 8544.
+[S.M. Reader] Thread 23724.
+[Main] Thread 16784.
+[ReadInput] Thread 19868.
+[Listener] Thread 6476.
+[S.M. Reader] Thread 20292.
+[Main] Thread 13160.
+[ReadInput] Thread 24456.
+[Listener] Thread 21860.
+[S.M. Reader] Thread 1708.
+[Main] Thread 6624.
+[ReadInput] Thread 24444.
+[Listener] Thread 21056.
+[S.M. Reader] Thread 852.
+[Main] Thread 15856.
+[ReadInput] Thread 10808.
+[Listener] Thread 21292.
+[S.M. Reader] Thread 8916.
+[Main] Thread 4716.
+[ReadInput] Thread 17012.
+[Listener] Thread 16148.
+[S.M. Reader] Thread 5308.
+[Main] Thread 19064.
+[ReadInput] Thread 9572.
+[Listener] Thread 23760.
+[S.M. Reader] Thread 6264.
+[Main] Thread 13776.
+[ReadInput] Thread 21656.
+[Listener] Thread 1496.
+[S.M. Reader] Thread 13820.
+[Main] Thread 15120.
+[ReadInput] Thread 23088.
+[S.M. Reader] Thread 2748.
+[Listener] Thread 17584.
+[Main] Thread 16844.
+[ReadInput] Thread 10000.
+[Listener] Thread 19288.
+[S.M. Reader] Thread 4996.
+[Main] Thread 23392.
+[ReadInput] Thread 20332.
+[Listener] Thread 18644.
+[S.M. Reader] Thread 22120.
+[Main] Thread 22280.
+[ReadInput] Thread 6232.
+[Listener] Thread 11416.
+[S.M. Reader] Thread 10020.
+[Main] Thread 16612.
+[ReadInput] Thread 17104.
+[Listener] Thread 6264.
+[S.M. Reader] Thread 19656.
+[Main] Thread 8896.
+[ReadInput] Thread 13640.
+[Listener] Thread 24052.
+[S.M. Reader] Thread 23456.
+[Main] Thread 20240.
+[ReadInput] Thread 21704.
+[Main] Thread 23004.
+[ReadInput] Thread 19056.
+[Main] Thread 14960.
+[ReadInput] Thread 1240.

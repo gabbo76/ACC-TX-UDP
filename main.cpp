@@ -28,19 +28,19 @@ std::atomic<bool>& getExitFlag() {
 	return exitFlag;
 }
 
-// DA PASSARE IL SOCKET "serverSocket" COME RIFERIMENTO ALL'HANDLER DI CHIUSURA
 SOCKET& getServerSocket() {
 	static SOCKET serverSocket = INVALID_SOCKET;
 	return serverSocket;
 }
 
-
+// Handler to close gracefully the program when the user clicks the "X" button on the console window
 BOOL WINAPI ConsoleHandler(DWORD ctrlType) {
 	if (ctrlType == CTRL_CLOSE_EVENT) {
 		// 1. Alza la bandiera
 		auto& exit = getExitFlag();
 		exit = true;
 
+		// Wait for the main thread to signal that all threads have been joined and it's safe to exit
 		WaitForSingleObject(readyToExit, INFINITE);
 		LogToFile("[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.");
 		return TRUE;
@@ -223,16 +223,15 @@ int main() {
 
 	// Exit phase
 	closesocket(getServerSocket());
-	DismissSM();
 	WSACleanup();
 	std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
 	// 3. Aspetta i thread
 	for (auto& thread : threads) {
-		if (thread.joinable()) {
-			std::cout << "[DEBUG] Joining thread " << thread.get_id() << "..." << std::endl;
+		if (thread.joinable())  {
 			thread.join();
 		}
 	}
+	DismissSM();
 	SetEvent(readyToExit);
 	CloseHandle(readyToExit);
 	return 0;
