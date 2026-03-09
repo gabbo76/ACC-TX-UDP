@@ -36,13 +36,12 @@ SOCKET& getServerSocket() {
 // Handler to close gracefully the program when the user clicks the "X" button on the console window
 BOOL WINAPI ConsoleHandler(DWORD ctrlType) {
 	if (ctrlType == CTRL_CLOSE_EVENT) {
-		// 1. Alza la bandiera
 		auto& exit = getExitFlag();
 		exit = true;
 
 		// Wait for the main thread to signal that all threads have been joined and it's safe to exit
 		WaitForSingleObject(readyToExit, INFINITE);
-		LogToFile("[DEBUG] Tutti i thread sono stati uniti. Uscita pulita.");
+		Sleep(100);
 		return TRUE;
 	}
 	return FALSE;
@@ -134,7 +133,7 @@ int main() {
 
 	Packet payload;
 
-	// --- 1. SETUP RETE (WINSOCK) --- 
+	// Setting up Winsock
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
@@ -142,8 +141,8 @@ int main() {
 		return 1;
 	}
 
-	// Creazione del Socket UDP
-	SOCKET serverSocket = getServerSocket();
+	// Creating UDP SOCKET
+	SOCKET& serverSocket = getServerSocket();
 	serverSocket =	socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (serverSocket == INVALID_SOCKET) {
 		std::cout << "Error creating socket: " << WSAGetLastError() << std::endl;
@@ -157,14 +156,14 @@ int main() {
 	localAddr.sin_port = htons(9999); // Port where the client has to connect to
 	if (bind(serverSocket, (sockaddr*)&localAddr, sizeof(localAddr)) == SOCKET_ERROR) {
 		std::cout << "[ERROR] Bind fallito: " << WSAGetLastError() << std::endl;
-		// Se fallisce, puliamo e usciamo, inutile lanciare i thread
+		// If something went wrong, cleanup and exit
 		closesocket(serverSocket);
 		WSACleanup();
 		return 1;
 	}
 
 
-	// Faccio partire i thread (se non deve uscire subito)
+	// Starting the threads if the S.M. is initialized correctly
 	if (initialized) {
 		// Thread to listen for new clients
 		std::thread s_listener(listener_thread, std::ref(exit), std::ref(serverSocket));
@@ -203,7 +202,6 @@ int main() {
 	while (!exit) {
 		payload = DataModel::getInstance().getPacket();
 
-		// Blocchiamo la lista client solo il tempo necessario per inviare
 		activeClients = DataModel::getInstance().getClients();
 		for (const auto& client : activeClients) {
 			int res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0,
@@ -211,8 +209,6 @@ int main() {
 
 			if (res == SOCKET_ERROR) {
 				int err = WSAGetLastError();
-				// Se vedi l'errore 10054 qui, significa che il client Python ha chiuso 
-				// o il firewall sta bloccando.
 				std::cout << "[SEND ERROR] Client irraggiungibile, errore: " << err << std::endl;
 			}
 			
@@ -222,16 +218,18 @@ int main() {
 	}
 
 	// Exit phase
-	closesocket(getServerSocket());
-	WSACleanup();
+	if (serverSocket != INVALID_SOCKET) {
+		closesocket(getServerSocket());
+	}
 	std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
-	// 3. Aspetta i thread
+	// Wait for all threads to finish
 	for (auto& thread : threads) {
 		if (thread.joinable())  {
 			thread.join();
 		}
 	}
 	DismissSM();
+	WSACleanup();
 	SetEvent(readyToExit);
 	CloseHandle(readyToExit);
 	return 0;

@@ -9,31 +9,26 @@ void readInputThread(std::atomic<bool>& exit)
     while (!exit) {
         if (GetAsyncKeyState(VK_RCONTROL) & 0x8000) {
 
-            std::cout << "\n[INPUT] Modalita' inserimento IP manuale" << std::endl;
-            std::cout << "Digita l'IP (es. 192.168.1.10) e premi Invio: ";
+            std::cout << "\n[INPUT] Manual mode, insert a IP address" << std::endl;
 
             std::string newIp;
             if (std::cin >> newIp) {
 
                 sockaddr_in sa;
-                ZeroMemory(&sa, sizeof(sa)); // Puliamo la struct
+                ZeroMemory(&sa, sizeof(sa));
                 sa.sin_family = AF_INET;
-                sa.sin_port = htons(9999); // La porta che usano i tuoi client
+                sa.sin_port = htons(9999); // Client must connect to this port
 
-                // Convertiamo la stringa in indirizzo IP reale
+                // String to address
                 int result = inet_pton(AF_INET, newIp.c_str(), &(sa.sin_addr));
 
                 if (result == 1) {
-                    // CHIAMATA AL TUO DATAMODEL
-                    // Passiamo direttamente la struct sockaddr_in come vuole la tua funzione
                     DataModel::getInstance().addClient(sa);
                 }
                 else {
-                    std::cout << "[ERRORE] IP non valido: " << newIp << std::endl;
+                    std::cout << "[ERRORE] IP not valid: " << newIp << std::endl;
                 }
             }
-
-            // Pulizia del buffer per evitare che il 'cin' faccia casino al prossimo giro
             std::cin.clear();
             std::cin.ignore(1000, '\n');
         }

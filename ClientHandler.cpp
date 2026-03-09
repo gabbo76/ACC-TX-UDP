@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-void listener_thread(std::atomic<bool>& exit, SOCKET listenSocket) {
+void listener_thread(std::atomic<bool>& exit, SOCKET& listenSocket) {
     std::stringstream ss;
     ss << std::this_thread::get_id();
     std::string threadIdStr = ss.str();
