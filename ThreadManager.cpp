@@ -27,7 +27,7 @@ void ThreadManager::addThread(std::thread&& t) {
 
         registry.push_back(std::move(t));
 
-        std::cout << "[THREAD MANAGER] Thread " << tid << " aggiunto fisicamente. Totale: " << registry.size() << std::endl;
+        //std::cout << "[THREAD MANAGER] Thread " << tid << " aggiunto. Totale: " << registry.size() << std::endl;
     }
 }
 
