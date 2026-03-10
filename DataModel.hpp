@@ -9,7 +9,6 @@
 struct ClientAddress {
     sockaddr_in addr;
 
-    // Operatore necessario per std::set: ordina per IP e poi per porta
     bool operator<(const ClientAddress& other) const {
         if (addr.sin_addr.s_addr != other.addr.sin_addr.s_addr)
             return addr.sin_addr.s_addr < other.addr.sin_addr.s_addr;
@@ -17,6 +16,7 @@ struct ClientAddress {
     }
 };
 
+// Struct of the pachet returned to the client, containing all the data we want to send
 struct _packet {
     float gas = 0;
     float brake = 0;
@@ -75,6 +75,7 @@ struct _packet {
 
 typedef struct _packet Packet;
 
+
 class DataModel {
 public:
 	static DataModel& getInstance();
@@ -93,7 +94,7 @@ public:
     // Remove a client from the list
     void removeClient(const sockaddr_in& clientAddr);
 
-    // Restituisce una copia della lista client per l'invio (Thread-safe)
+	//Returns a set with all the clients currently connected
     std::set<ClientAddress> getClients();
 
 private:
@@ -106,6 +107,7 @@ private:
     // Mutex for writing/reading the clients list
     mutable std::mutex _clientsMutex;
 
+    // Private copy of the structs read from the shared memory used to create the packet
 	SPageFileGraphic graphicsData;
 	SPageFilePhysics physicsData;
 	SPageFileStatic staticData;

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <sstream>
 
-// Definizione del puntatore statico (inizialmente a null)
 ThreadManager* ThreadManager::instance = nullptr;
 std::mutex ThreadManager::instanceMtx;
 
@@ -20,8 +19,8 @@ ThreadManager& ThreadManager::getInstance() {
 void ThreadManager::addThread(std::thread&& t) {
     if (t.joinable()) {
         std::lock_guard<std::mutex> lock(registryMtx);
-
-        // Salviamo l'ID per il log di debug prima del move
+        
+        // Debug
         std::stringstream ss;
         ss << t.get_id();
         std::string tid = ss.str();
