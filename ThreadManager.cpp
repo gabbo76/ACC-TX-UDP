@@ -21,9 +21,9 @@ void ThreadManager::addThread(std::thread&& t) {
         std::lock_guard<std::mutex> lock(registryMtx);
         
         // Debug
-        std::stringstream ss;
-        ss << t.get_id();
-        std::string tid = ss.str();
+        //std::stringstream ss;
+        //ss << t.get_id();
+        //std::string tid = ss.str();
 
         registry.push_back(std::move(t));
 
