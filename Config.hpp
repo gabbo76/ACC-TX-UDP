@@ -9,7 +9,7 @@ struct Config {
     int serverPort;  // Port used both to receive START/STOP and send telemetry
     int updateHz;    // Telemetry update frequency in Hz
 
-    int sleepMs() const { return 1000 / updateHz; }
+    int sleepMs() const { return 1 / updateHz; }
 };
 
 class ConfigManager {
