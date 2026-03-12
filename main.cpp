@@ -114,12 +114,12 @@ int main() {
 	SPageFileStatic staticData;
 
 	if (!initialized) {
-		std::cout << "Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;
+		std::cout << "[START] Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;
 	}
 	while (!initialized) {
 		if (InitSM() == 1) {
 			initialized = true;
-			std::cout << "Shared memory initialized successfully." << std::endl;
+			std::cout << "[Shared Memory] Shared memory initialized successfully." << std::endl;
 		}
 		else if (getExitFlag()) {
 			break;
