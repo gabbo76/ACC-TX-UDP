@@ -6,6 +6,7 @@
 #include "ThreadManager.hpp"
 #include "GlobalDebug.hpp"
 #include "InputReaderThread.hpp"
+#include "SharedMemoryReaderThread.hpp"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>
@@ -170,27 +171,7 @@ int main() {
 		ThreadManager::getInstance().addThread(std::move(s_listener));
 
 		// Thread to update the data model
-		std::thread sm_reader([&exit]() {
-			std::stringstream ss;
-			ss << std::this_thread::get_id();
-			std::string threadIdStr = ss.str();
-			LogToFile("[S.M. Reader] Thread " + threadIdStr + ".");
-			while (!exit) {
-				SPageFileGraphic g;
-				SPageFilePhysics p;
-				SPageFileStatic s;
-
-				ReadPhysics(&p);
-				ReadGraphics(&g);
-				ReadStatic(&s);
-
-				DataModel::getInstance().updateData(g, p, s);
-
-				Sleep(16); // Sleep for 16ms to achieve ~60Hz update rate
-			}
-
-			std::cout << "[Shared Memory] Thread in uscita." << std::endl;
-			});
+		std::thread sm_reader(readSharedMemoryThread, std::ref(exit));
 		ThreadManager::getInstance().addThread(std::move(sm_reader));
 	}
 
@@ -223,11 +204,8 @@ int main() {
 	}
 	std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
 	// Wait for all threads to finish
-	for (auto& thread : threads) {
-		if (thread.joinable())  {
-			thread.join();
-		}
-	}
+	ThreadManager::getInstance().joinAll();
+
 	DismissSM();
 	WSACleanup();
 	SetEvent(readyToExit);

@@ -35,3 +35,13 @@ std::vector<std::thread>& ThreadManager::getRegistry() {
     std::lock_guard<std::mutex> lock(registryMtx);
     return registry;
 }
+
+void ThreadManager::joinAll() {
+	std::lock_guard<std::mutex> lock(registryMtx);
+    for(auto& thread : registry) {
+        if (thread.joinable()) {
+            thread.join();
+        }
+	}
+    registry.clear();
+}

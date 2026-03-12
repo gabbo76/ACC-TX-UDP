@@ -1,7 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "DataModel.hpp"
-#include <winsock2.h>
 #include <ws2tcpip.h>
 
 DataModel& DataModel::getInstance() {
@@ -32,6 +31,8 @@ Packet DataModel::getPacket() {
         p_snap = physicsData;
         s_snap = staticData;
     }
+
+    Packet packet;
 
     packet.gas = p_snap.gas;
     packet.brake = p_snap.brake;
@@ -69,13 +70,38 @@ Packet DataModel::getPacket() {
     packet.absInAction = p_snap.absInAction;
     packet.waterTemp = p_snap.waterTemp;
 
+    /*
+    pkt.frontBrakeCompound = p_snap.frontBrakeCompound;
+    pkt.rearBrakeCompound = p_snap.rearBrakeCompound;
+    pkt.ignitionOn = p_snap.ignitionOn;
+    pkt.starterEngineOn = p_snap.starterEngineOn;
+    pkt.isEngineRunning = p_snap.isEngineRunning;
+    */
+
+    /*
+    --- Dati grafici (SPageFileGraphic) --- (Bug fix: prima non venivano copiati!)
+    pkt.status = g_snap.status;
+    pkt.session = g_snap.session;
+    pkt.completedLaps = g_snap.completedLaps;
+    pkt.position = g_snap.position;
+    pkt.iCurrentTime = g_snap.iCurrentTime;
+    pkt.iLastTime = g_snap.iLastTime;
+    pkt.iBestTime = g_snap.iBestTime;
+    pkt.sessionTimeLeft = g_snap.sessionTimeLeft;
+    pkt.flag = g_snap.flag;
+    pkt.fuelXLap = g_snap.fuelXLap;
+    wcsncpy_s(pkt.currentTime, g_snap.currentTime, 14);
+    wcsncpy_s(pkt.lastTime, g_snap.lastTime, 14);
+    wcsncpy_s(pkt.bestTime, g_snap.bestTime, 14);
+    wcsncpy_s(pkt.split, g_snap.split, 14)
+    */
+
     return packet;
 }
 
 void DataModel::addClient(const sockaddr_in& clientAddr) {
     std::lock_guard<std::mutex> lock(_clientsMutex);
 
-    // Il set gestisce automaticamente i duplicati grazie all'operatore <
     auto result = _activeClients.insert({ clientAddr });
 
     if (result.second) {
@@ -93,8 +119,5 @@ void DataModel::removeClient(const sockaddr_in& clientAddr) {
 
 std::set<ClientAddress> DataModel::getClients() {
     std::lock_guard<std::mutex> lock(_clientsMutex);
-    // Restituiamo una COPIA del set. 
-    // Così il thread che invia può ciclarlo senza preoccuparsi se 
-    // nel frattempo arrivano nuovi "START".
     return _activeClients;
 }

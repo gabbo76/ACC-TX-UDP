@@ -1,10 +1,16 @@
-#pragma once
+#define WIN32_LEAN_AND_MEAN
+
+#ifndef DATAMODEL_HPP
+#define DATAMODEL_HPP
+
+
 #include "SharedFileOut.h"
 #include "ReadData.h"
 #include <mutex>
 #include <set>
 #include <shared_mutex>
 #include <WinSock2.h>
+#include <Windows.h>
 
 struct ClientAddress {
     sockaddr_in addr;
@@ -111,7 +117,8 @@ private:
 	SPageFileGraphic graphicsData;
 	SPageFilePhysics physicsData;
 	SPageFileStatic staticData;
-	Packet packet;
 
     std::set<ClientAddress> _activeClients;
 };
+
+#endif

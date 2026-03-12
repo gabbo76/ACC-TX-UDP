@@ -130,9 +130,9 @@
     <ClInclude Include="ClientHandler.hpp" />
     <ClInclude Include="DataModel.hpp" />
     <ClInclude Include="InputReaderThread.hpp" />
-    <ClInclude Include="PacketMaker.h" />
     <ClInclude Include="ReadData.h" />
     <ClInclude Include="SharedFileOut.h" />
+    <ClInclude Include="SharedMemoryReaderThread.hpp" />
     <ClInclude Include="ThreadManager.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -141,8 +141,8 @@
     <ClCompile Include="GlobalDebug.hpp" />
     <ClCompile Include="InputReaderThread.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PacketMaker.cpp" />
     <ClCompile Include="ReadData.cpp" />
+    <ClCompile Include="SharedMemoryReaderThread.cpp" />
     <ClCompile Include="ThreadManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

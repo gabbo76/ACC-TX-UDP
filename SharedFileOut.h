@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef SHARED_FILE_OUT_H
+#define SHARED_FILE_OUT_H
 
 enum class PenaltyShortcut : int {
     None,
@@ -352,4 +352,4 @@ struct SPageFileStatic
 
 
 #pragma pack(pop)
-#pragma once
+#endif

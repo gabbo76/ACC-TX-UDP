@@ -21,9 +21,6 @@
     <ClInclude Include="ReadData.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="PacketMaker.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="DataModel.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
@@ -36,15 +33,15 @@
     <ClInclude Include="InputReaderThread.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="SharedMemoryReaderThread.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
     <ClCompile Include="ReadData.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
-    <ClCompile Include="PacketMaker.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
     <ClCompile Include="DataModel.cpp">
@@ -60,6 +57,9 @@
       <Filter>File di intestazione</Filter>
     </ClCompile>
     <ClCompile Include="InputReaderThread.cpp">
+      <Filter>File di risorse</Filter>
+    </ClCompile>
+    <ClCompile Include="SharedMemoryReaderThread.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
   </ItemGroup>
