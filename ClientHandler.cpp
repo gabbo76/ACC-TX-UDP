@@ -18,8 +18,9 @@ void listener_thread(std::atomic<bool>& exit, SOCKET& listenSocket) {
         if (bytes > 0) {
             buffer[bytes] = '\0';
             if (strncmp(buffer, "START", 5) == 0) {
-                std::cout << "[REGISTRY] Nuovo client registrato!" << std::endl;
                 DataModel::getInstance().addClient(clientAddr);
+            }else if(strncmp(buffer, "STOP", 4) == 0) {
+                DataModel::getInstance().removeClient(clientAddr);
             }
         }else if (bytes == 0) {
             // UDP è connectionless, ma su alcuni sistemi bytes == 0 può indicare shutdown
