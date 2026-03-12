@@ -201,7 +201,7 @@ int main() {
 	if (serverSocket != INVALID_SOCKET) {
 		closesocket(getServerSocket());
 	}
-	std::vector<std::thread>& threads = ThreadManager::getInstance().getRegistry();
+
 	// Wait for all threads to finish
 	ThreadManager::getInstance().joinAll();
 
