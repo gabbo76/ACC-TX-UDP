@@ -14,7 +14,7 @@ ACC exposes real-time telemetry (physics, graphics, session data) via Windows sh
 ┌─────────────────────┐        Shared Memory        ┌─────────────────────┐
 │  Assetto Corsa      │ ──────────────────────────► │   ACC-TX-UDP        │
 │  Competizione       │   acpmf_physics              │   (this server)     │
-└─────────────────────┘   acpmf_graphics             └──────────┬──────────┘
+└─────────────────────┘   acpmf_graphics            └──────────┬──────────┘
                           acpmf_static                          │ UDP packets
                                                     ┌───────────┼───────────┐
                                                     ▼           ▼           ▼
