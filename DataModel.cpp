@@ -71,31 +71,30 @@ Packet DataModel::getPacket() {
     packet.waterTemp = p_snap.waterTemp;
 
     /*
-    pkt.frontBrakeCompound = p_snap.frontBrakeCompound;
-    pkt.rearBrakeCompound = p_snap.rearBrakeCompound;
-    pkt.ignitionOn = p_snap.ignitionOn;
-    pkt.starterEngineOn = p_snap.starterEngineOn;
-    pkt.isEngineRunning = p_snap.isEngineRunning;
+    packet.frontBrakeCompound = p_snap.frontBrakeCompound;
+    packet.rearBrakeCompound = p_snap.rearBrakeCompound;
+    packet.ignitionOn = p_snap.ignitionOn;
+    packet.starterEngineOn = p_snap.starterEngineOn;
+    packet.isEngineRunning = p_snap.isEngineRunning;
     */
 
     /*
     --- Dati grafici (SPageFileGraphic) --- (Bug fix: prima non venivano copiati!)
-    pkt.status = g_snap.status;
-    pkt.session = g_snap.session;
-    pkt.completedLaps = g_snap.completedLaps;
-    pkt.position = g_snap.position;
-    pkt.iCurrentTime = g_snap.iCurrentTime;
-    pkt.iLastTime = g_snap.iLastTime;
-    pkt.iBestTime = g_snap.iBestTime;
-    pkt.sessionTimeLeft = g_snap.sessionTimeLeft;
-    pkt.flag = g_snap.flag;
-    pkt.fuelXLap = g_snap.fuelXLap;
-    wcsncpy_s(pkt.currentTime, g_snap.currentTime, 14);
-    wcsncpy_s(pkt.lastTime, g_snap.lastTime, 14);
-    wcsncpy_s(pkt.bestTime, g_snap.bestTime, 14);
-    wcsncpy_s(pkt.split, g_snap.split, 14)
+    packet.status = g_snap.status;
+    packet.session = g_snap.session;
+    packet.completedLaps = g_snap.completedLaps;
+    packet.position = g_snap.position;
+    packet.iCurrentTime = g_snap.iCurrentTime;
+    packet.iLastTime = g_snap.iLastTime;
+    packet.iBestTime = g_snap.iBestTime;
+    packet.sessionTimeLeft = g_snap.sessionTimeLeft;
+    packet.flag = g_snap.flag;
+    packet.fuelXLap = g_snap.fuelXLap;
+    wcsncpy_s(packet.currentTime, g_snap.currentTime, 14);
+    wcsncpy_s(packet.lastTime, g_snap.lastTime, 14);
+    wcsncpy_s(packet.bestTime, g_snap.bestTime, 14);
+    wcsncpy_s(packet.split, g_snap.split, 14)
     */
-
     return packet;
 }
 
