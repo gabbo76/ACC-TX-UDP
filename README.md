@@ -15,9 +15,9 @@ ACC exposes real-time telemetry (physics, graphics, session data) via Windows sh
 │  Assetto Corsa      │ ──────────────────────────► │   ACC-TX-UDP        │
 │  Competizione       │   acpmf_physics             │   (this server)     │
 └─────────────────────┘   acpmf_graphics            └──────────┬──────────┘
-                          acpmf_static                          │ UDP packets
-                                                    ┌───────────┼───────────┐
-                                                    ▼           ▼           ▼
+                          acpmf_static                         │ UDP packets
+                                                   ┌───────────┼───────────┐
+                                                   ▼           ▼           ▼
                                                Client 1    Client 2    Client 3
 ```
 
@@ -64,7 +64,7 @@ Clients register themselves by sending a UTF-8 string `START` to the server port
 
 ```
 Client  ──── "START" (UDP) ────►  Server:9999
-Client  ◄─── Telemetry packets ── Server:9999
+Client  ◄─── "STOP" (UDP) ── Server:9999
 ```
 
 If a client cannot send a `START` packet (e.g. network restrictions), you can register it manually by pressing **Right Ctrl** in the server console and typing the client IP address.
@@ -85,7 +85,3 @@ If a client cannot send a `START` packet (e.g. network restrictions), you can re
 | `ReadData` | Low-level shared memory access (open, read, close) |
 
 ---
-
-## License
-
-The shared memory structures in `SharedFileOut.h` are based on the official ACC SDK provided by Kunos Simulazioni.
