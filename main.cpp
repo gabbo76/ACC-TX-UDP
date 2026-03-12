@@ -7,10 +7,10 @@
 #include "GlobalDebug.hpp"
 #include "InputReaderThread.hpp"
 #include "SharedMemoryReaderThread.hpp"
+#include "Config.hpp"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>
-#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <thread>
@@ -70,11 +70,6 @@ int main() {
 	// Exit handle
 	readyToExit = CreateEventA(NULL, TRUE, FALSE, NULL);
 
-	std::stringstream ss;
-	ss << std::this_thread::get_id();
-	std::string threadIdStr = ss.str();
-	LogToFile("[Main] Thread " + threadIdStr + ".");
-
 	// Handler to close gracefully the program when the user clicks the "X" button on the console window
 	if (!SetConsoleCtrlHandler(ConsoleHandler, TRUE)) {
 		return 1;
@@ -101,6 +96,8 @@ int main() {
 		if (hMutex) CloseHandle(hMutex);
 		return 1;
 	}
+
+	ConfigManager::getInstance().load();
 
 	// Atomic variabile for the loop
 	auto& exit = getExitFlag();
@@ -154,14 +151,16 @@ int main() {
 	sockaddr_in localAddr;
 	localAddr.sin_family = AF_INET;
 	localAddr.sin_addr.s_addr = INADDR_ANY;
-	localAddr.sin_port = htons(9999); // Port where the client has to connect to
+	localAddr.sin_port = htons(ConfigManager::getInstance().get().serverPort); // Port where the client has to connect to
 	if (bind(serverSocket, (sockaddr*)&localAddr, sizeof(localAddr)) == SOCKET_ERROR) {
-		std::cout << "[ERROR] Bind fallito: " << WSAGetLastError() << std::endl;
+		std::cout << "[ERROR] Bind failed: " << WSAGetLastError() << std::endl;
 		// If something went wrong, cleanup and exit
 		closesocket(serverSocket);
 		WSACleanup();
 		return 1;
 	}
+
+	std::cout << "[DEBUG] Server opened at port: " << ConfigManager::getInstance().get().serverPort << std::endl;
 
 
 	// Starting the threads if the S.M. is initialized correctly

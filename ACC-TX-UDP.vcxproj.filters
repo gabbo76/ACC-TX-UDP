@@ -36,6 +36,9 @@
     <ClInclude Include="SharedMemoryReaderThread.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="Config.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -60,6 +63,9 @@
       <Filter>File di risorse</Filter>
     </ClCompile>
     <ClCompile Include="SharedMemoryReaderThread.cpp">
+      <Filter>File di risorse</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
   </ItemGroup>
