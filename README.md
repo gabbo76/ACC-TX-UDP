@@ -1,51 +1,32 @@
 # ACC-TX-UDP
 
-A lightweight UDP server that reads **Assetto Corsa Competizione** telemetry data from shared memory and broadcasts it in real time to connected clients over the network.
+A lightweight UDP telemetry server for **Assetto Corsa Competizione**.
 
-Useful for building external dashboards, sim racing overlays, or connecting to hardware devices (displays, button boxes, motion platforms) on a local network.
-
----
-
-## How it works
-
-ACC exposes real-time telemetry (physics, graphics, session data) via Windows shared memory. ACC-TX-UDP reads that data at ~60Hz and forwards it as UDP packets to any registered client.
-
-```
-┌─────────────────────┐        Shared Memory        ┌─────────────────────┐
-│  Assetto Corsa      │ ──────────────────────────► │   ACC-TX-UDP        │
-│  Competizione       │   acpmf_physics             │   (this server)     │
-└─────────────────────┘   acpmf_graphics            └──────────┬──────────┘
-                          acpmf_static                         │ UDP packets
-                                                   ┌───────────┼───────────┐
-                                                   ▼           ▼           ▼
-                                               Client 1    Client 2    Client 3
-```
+It reads real-time data from ACC's shared memory and broadcasts it over UDP to one or more connected clients.
 
 ---
 
 ## Requirements
 
-- Windows 10/11
-- Assetto Corsa Competizione (Steam)
+- Windows (ACC shared memory is Windows-only)
 - Visual Studio 2019 or later
+- Assetto Corsa Competizione running on the same machine
 
 ---
 
 ## Build
 
-1. Open `ACC-TX-UDP.sln` in Visual Studio
-2. Select **Release** configuration
-3. Build → Build Solution (`Ctrl+Shift+B`)
+Open `ACC-TX-UDP.sln` in Visual Studio and build in Release or Debug configuration. No external dependencies required.
 
 ---
 
 ## Configuration
 
-On first launch, a `config.ini` file is created automatically in the same directory as the executable:
+On first launch, a `config.ini` file is automatically created in the same directory as the executable:
 
 ```ini
 [network]
-serverPort=9999
+serverPort=9998
 
 [telemetry]
 updateHz=60
@@ -53,24 +34,25 @@ updateHz=60
 
 | Parameter    | Description                              | Default |
 |--------------|------------------------------------------|---------|
-| `serverPort` | UDP port for both registration and data  | 9999    |
-| `updateHz`   | Telemetry update frequency (1–120 Hz)    | 60      |
+| `serverPort` | UDP port used for registration and data  | 9998    |
+| `updateHz`   | Telemetry broadcast frequency (1–120 Hz) | 60      |
 
 ---
 
-## Client registration
+## Client Registration Protocol
 
-Clients register themselves by sending a UTF-8 string `START` to the server port. The server will then start streaming telemetry packets to that client.
+Clients communicate with the server over UDP on `serverPort`.
 
-```
-Client  ──── "START" (UDP) ────►  Server:9999
-Client  ◄─── "STOP" (UDP) ── Server:9999
-```
+| Message | Direction       | Effect                                          |
+|---------|-----------------|-------------------------------------------------|
+| `START` | Client → Server | Registers the client, starts receiving telemetry |
+| `STOP`  | Client → Server | Unregisters the client                          |
 
-If a client cannot send a `START` packet (e.g. network restrictions), you can register it manually by pressing **Right Ctrl** in the server console and typing the client IP address.
+Once registered, the client receives a binary `Packet` struct at the configured frequency.
+
+> **Manual registration:** pressing **Right Ctrl** in the server console allows manually entering a client IP address, useful if the client cannot send a `START` packet for any reason.
 
 ---
-
 
 ## Architecture
 
@@ -85,3 +67,8 @@ If a client cannot send a `START` packet (e.g. network restrictions), you can re
 | `ReadData` | Low-level shared memory access (open, read, close) |
 
 ---
+
+## License
+
+This project is released for personal and educational use.  
+ACC shared memory structures are based on the official SDK provided by Kunos Simulazioni.
