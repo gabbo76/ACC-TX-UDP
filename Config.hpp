@@ -21,6 +21,7 @@ public:
     // Loads config from file. If file doesn't exist, creates it with defaults.
     bool load();
 
+    // Even if it's not thread-safe, the load function gets called once, so the Config struct is not overwritten.
     const Config& get() const { return _config; }
 
 private:
