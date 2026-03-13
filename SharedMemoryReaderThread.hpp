@@ -3,6 +3,7 @@
 #include "GlobalDebug.hpp"
 #include "ReadData.h"
 #include "SharedFileOut.h"
+#include "Config.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>

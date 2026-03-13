@@ -178,6 +178,8 @@ int main() {
 	// Active clients set
 	std::set<ClientAddress> activeClients;
 
+	int sleepMs = ConfigManager::getInstance().get().sleepMs();
+
 	// This thread sends data
 	while (!exit) {
 		payload = DataModel::getInstance().getPacket();
@@ -194,7 +196,7 @@ int main() {
 			
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+		std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
 	}
 
 	// Exit phase
