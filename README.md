@@ -26,7 +26,7 @@ On first launch, a `config.ini` file is automatically created in the same direct
 
 ```ini
 [network]
-serverPort=9998
+serverPort=9999
 
 [telemetry]
 updateHz=60
@@ -34,7 +34,7 @@ updateHz=60
 
 | Parameter    | Description                              | Default |
 |--------------|------------------------------------------|---------|
-| `serverPort` | UDP port used for registration and data  | 9998    |
+| `serverPort` | UDP port used for registration and data  | 9999    |
 | `updateHz`   | Telemetry broadcast frequency (1–120 Hz) | 60      |
 
 ---
