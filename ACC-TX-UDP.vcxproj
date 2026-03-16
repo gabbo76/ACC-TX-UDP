@@ -18,6 +18,36 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ClientHandler.cpp" />
+    <ClCompile Include="src\Config.cpp" />
+    <ClCompile Include="src\DataModel.cpp" />
+    <ClCompile Include="src\InputReaderThread.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ReadData.cpp" />
+    <ClCompile Include="src\SharedMemoryReaderThread.cpp" />
+    <ClCompile Include="src\ThreadManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\ClientHandler.hpp" />
+    <ClInclude Include="include\Config.hpp" />
+    <ClInclude Include="include\DataModel.hpp" />
+    <ClInclude Include="include\GlobalDebug.hpp" />
+    <ClInclude Include="include\InputReaderThread.hpp" />
+    <ClInclude Include="include\ReadData.h" />
+    <ClInclude Include="include\SharedFileOut.h" />
+    <ClInclude Include="include\SharedMemoryReaderThread.hpp" />
+    <ClInclude Include="include\ThreadManager.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="config.ini" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="debug_shutdown.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -104,6 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,27 +157,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="ClientHandler.hpp" />
-    <ClInclude Include="Config.hpp" />
-    <ClInclude Include="DataModel.hpp" />
-    <ClInclude Include="InputReaderThread.hpp" />
-    <ClInclude Include="ReadData.h" />
-    <ClInclude Include="SharedFileOut.h" />
-    <ClInclude Include="SharedMemoryReaderThread.hpp" />
-    <ClInclude Include="ThreadManager.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="ClientHandler.cpp" />
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="DataModel.cpp" />
-    <ClCompile Include="GlobalDebug.hpp" />
-    <ClCompile Include="InputReaderThread.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="ReadData.cpp" />
-    <ClCompile Include="SharedMemoryReaderThread.cpp" />
-    <ClCompile Include="ThreadManager.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

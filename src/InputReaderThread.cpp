@@ -1,4 +1,4 @@
-#include "InputReaderThread.hpp"
+#include "../include/InputReaderThread.hpp"
 
 void readInputThread(std::atomic<bool>& exit)
 {

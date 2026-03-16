@@ -6,11 +6,11 @@
 #include <atomic>
 #include <sstream>
 #include <iostream>
-#include "ReadData.h"
+#include "../include/ReadData.h"
 #include <winsock2.h>
-#include "DataModel.hpp"
+#include "../include/DataModel.hpp"
 #include <WS2tcpip.h>
-#include "GlobalDebug.hpp"
+#include "../include/GlobalDebug.hpp"
 
 #pragma comment(lib, "ws2_32.lib")
 

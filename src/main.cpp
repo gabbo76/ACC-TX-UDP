@@ -1,13 +1,13 @@
 #define WIN32_LEAN_AND_MEAN
 
-#include "ReadData.h"
-#include "DataModel.hpp"
-#include "ClientHandler.hpp"
-#include "ThreadManager.hpp"
-#include "GlobalDebug.hpp"
-#include "InputReaderThread.hpp"
-#include "SharedMemoryReaderThread.hpp"
-#include "Config.hpp"
+#include "../include/ReadData.h"
+#include "../include/DataModel.hpp"
+#include "../include/ClientHandler.hpp"
+#include "../include/ThreadManager.hpp"
+#include "../include/GlobalDebug.hpp"
+#include "../include/InputReaderThread.hpp"
+#include "../include/SharedMemoryReaderThread.hpp"
+#include "../include/Config.hpp"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>

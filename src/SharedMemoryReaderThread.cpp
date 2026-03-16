@@ -1,4 +1,4 @@
-#include "SharedMemoryReaderThread.hpp"
+#include "../include/SharedMemoryReaderThread.hpp"
 
 void readSharedMemoryThread(std::atomic<bool>& exit) {
 	

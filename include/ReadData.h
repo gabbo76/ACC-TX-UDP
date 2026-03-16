@@ -1,7 +1,7 @@
 #ifndef READDATA_H
 #define READDATA_H
 
-#include "SharedFileOut.h"
+#include "../include/SharedFileOut.h"
 #include <windows.h>
 #include <tchar.h>
 #include <iostream>

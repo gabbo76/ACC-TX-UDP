@@ -15,58 +15,67 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SharedFileOut.h">
+    <ClCompile Include="src\ClientHandler.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Config.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DataModel.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputReaderThread.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ReadData.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SharedMemoryReaderThread.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThreadManager.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\ClientHandler.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="ReadData.h">
+    <ClInclude Include="include\Config.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="DataModel.hpp">
+    <ClInclude Include="include\DataModel.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="ClientHandler.hpp">
+    <ClInclude Include="include\GlobalDebug.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="ThreadManager.hpp">
+    <ClInclude Include="include\InputReaderThread.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="InputReaderThread.hpp">
+    <ClInclude Include="include\ReadData.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="SharedMemoryReaderThread.hpp">
+    <ClInclude Include="include\SharedFileOut.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Config.hpp">
+    <ClInclude Include="include\SharedMemoryReaderThread.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ThreadManager.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
-    <ClCompile Include="ReadData.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
-    <ClCompile Include="DataModel.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientHandler.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
-    <ClCompile Include="ThreadManager.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
-    <ClCompile Include="GlobalDebug.hpp">
-      <Filter>File di intestazione</Filter>
-    </ClCompile>
-    <ClCompile Include="InputReaderThread.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
-    <ClCompile Include="SharedMemoryReaderThread.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
-    <ClCompile Include="Config.cpp">
-      <Filter>File di risorse</Filter>
-    </ClCompile>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="config.ini" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="debug_shutdown.txt" />
   </ItemGroup>
 </Project>

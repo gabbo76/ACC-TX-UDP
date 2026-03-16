@@ -4,8 +4,8 @@
 #define DATAMODEL_HPP
 
 
-#include "SharedFileOut.h"
-#include "ReadData.h"
+#include "../include/SharedFileOut.h"
+#include "../include/ReadData.h"
 #include <mutex>
 #include <set>
 #include <shared_mutex>

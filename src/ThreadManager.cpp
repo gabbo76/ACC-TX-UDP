@@ -1,4 +1,4 @@
-#include "ThreadManager.hpp"
+#include "../include/ThreadManager.hpp"
 #include <iostream>
 #include <sstream>
 

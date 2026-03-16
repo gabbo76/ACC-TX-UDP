@@ -1,6 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 
-#include "DataModel.hpp"
+#include "../include/DataModel.hpp"
 #include <ws2tcpip.h>
 
 DataModel& DataModel::getInstance() {
