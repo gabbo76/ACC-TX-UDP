@@ -13,11 +13,6 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-# VisualStudio files
-/ACC-TX-UDP.vcxproj.filters
-/ACC-TX-UDP.vcxproj
-/ACC-TX-UDP.sln
-
 # Mono auto generated files
 mono_crash.*
 
@@ -366,4 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Visual Studio project files
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
 /debug_shutdown.txt
