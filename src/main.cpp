@@ -109,10 +109,6 @@ int main() {
 	std::thread readInput(readInputThread, std::ref(exit));
 	ThreadManager::getInstance().addThread(std::move(readInput));
 
-	SPageFileGraphic graphicsData;
-	SPageFilePhysics physicsData;
-	SPageFileStatic staticData;
-
 	if (!initialized) {
 		std::cout << "[START] Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;
 	}
