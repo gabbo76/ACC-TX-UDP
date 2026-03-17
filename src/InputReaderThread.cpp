@@ -1,10 +1,6 @@
 #include "../include/InputReaderThread.hpp"
 
-void readInputThread(std::atomic<bool>& exit)
-{
-    std::stringstream ss;
-    ss << std::this_thread::get_id();
-    LogToFile("[ReadInput] Thread " + ss.str() + ".");
+void readInputThread(std::atomic<bool>& exit){
 
     while (!exit) {
         if (GetAsyncKeyState(VK_RCONTROL) & 0x8000) {

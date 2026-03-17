@@ -1,12 +1,6 @@
 #include "../include/SharedMemoryReaderThread.hpp"
 
 void readSharedMemoryThread(std::atomic<bool>& exit) {
-	
-	std::cout << "Shared Memory Reader Thread started." << std::endl;
-	std::stringstream ss;
-	ss << std::this_thread::get_id();
-	std::string threadIdStr = ss.str();
-	LogToFile("[S.M. Reader] Thread " + threadIdStr + ".");
 
 	int sleepMs = ConfigManager::getInstance().get().sleepMs();
 
