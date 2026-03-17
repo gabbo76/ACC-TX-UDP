@@ -186,8 +186,7 @@ int main() {
 
 		activeClients = DataModel::getInstance().getClients();
 		for (const auto& client : activeClients) {
-			int res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0,
-				(sockaddr*)&client.addr, sizeof(client.addr));
+			int res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&client.addr, sizeof(client.addr));
 
 			if (res == SOCKET_ERROR) {
 				int err = WSAGetLastError();
