@@ -1,7 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "../include/ReadData.h"
-#include "../include/DataModel.hpp"
+//#include "../include/DataModel.hpp"
 #include "../include/ClientHandler.hpp"
 #include "../include/ThreadManager.hpp"
 #include "../include/GlobalDebug.hpp"
@@ -16,6 +16,9 @@
 #include <thread>
 #include <sstream>
 #include <fstream>
+
+#include "../include/DataFactory.hpp"
+#include <Factory/ACCFactory.hpp>
 
 
 #define MAX_TITLE_LENGTH 64
@@ -109,11 +112,19 @@ int main() {
 	std::thread readInput(readInputThread, std::ref(exit));
 	ThreadManager::getInstance().addThread(std::move(readInput));
 
+	std::string sim = ConfigManager::getInstance().get().simType;
+
+	std::unique_ptr<DataFactory> sim_factory = nullptr;
+
+	if (sim == "ACC") {
+		sim_factory = std::make_unique<ACCFactory>();
+	}
+
 	if (!initialized) {
 		std::cout << "[START] Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;
 	}
 	while (!initialized) {
-		if (InitSM() == 1) {
+		if (sim_factory->getReader().InitSM() == 1) {
 			initialized = true;
 			std::cout << "[Shared Memory] Shared memory initialized successfully." << std::endl;
 		}
@@ -176,11 +187,13 @@ int main() {
 
 	int sleepMs = ConfigManager::getInstance().get().sleepMs();
 
+	IDataModel& model = sim_factory->getModel();
+
 	// This thread sends data
 	while (!exit) {
-		payload = DataModel::getInstance().getPacket();
+		payload = model.getPacket();
 
-		activeClients = DataModel::getInstance().getClients();
+		activeClients = model.getClients();
 		for (const auto& client : activeClients) {
 			int res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&client.addr, sizeof(client.addr));
 

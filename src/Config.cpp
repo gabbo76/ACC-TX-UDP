@@ -11,6 +11,7 @@ ConfigManager& ConfigManager::getInstance() {
 void ConfigManager::setDefaults() {
     _config.serverPort = DEFAULT_SERVER_PORT;
     _config.updateHz = DEFAULT_UPDATE_HZ;
+    _config.simType = DEFAULT_SIM_TYPE; // Inizializziamo il default
 }
 
 bool ConfigManager::writeDefaults() {
@@ -25,6 +26,9 @@ bool ConfigManager::writeDefaults() {
     f << "\n";
     f << "[telemetry]\n";
     f << "updateHz=" << DEFAULT_UPDATE_HZ << "\n";
+    f << "\n";
+    f << "[sim]\n";
+    f << "simType=" << DEFAULT_SIM_TYPE << "\n";
 
     std::cout << "[CONFIG] Config file created with defaults: " << CONFIG_FILE_PATH << std::endl;
     return true;
@@ -54,6 +58,7 @@ bool ConfigManager::load() {
         try {
             if (key == "serverPort") _config.serverPort = std::stoi(value);
             else if (key == "updateHz")   _config.updateHz = std::stoi(value);
+            else if (key == "simType")   _config.simType = value;
         }
         catch (const std::exception&) {
             std::cerr << "[CONFIG] Invalid value for key '" << key << "', using default." << std::endl;

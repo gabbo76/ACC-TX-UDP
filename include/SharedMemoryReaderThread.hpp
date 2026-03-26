@@ -1,9 +1,10 @@
-#include "../include/DataModel.hpp"
+//#include "DataModel.hpp"
 #include <atomic>
-#include "../include/GlobalDebug.hpp"
-#include "../include/ReadData.h"
-#include "../include/SharedFileOut.h"
-#include "../include/Config.hpp"
+#include "GlobalDebug.hpp"
+#include "ReadData.h"
+#include "SharedFileOut.h"
+#include "Config.hpp"
+#include "DataReaders.hpp"
 #include <iostream>
 #include <sstream>
 #include <fstream>

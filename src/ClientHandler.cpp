@@ -1,5 +1,8 @@
 #include "../include/ClientHandler.hpp"
-#include "../include/DataModel.hpp"
+//#include "../include/DataModel.hpp"
+#include "../include/DataFactory.hpp"
+#include "../include/IDataModel.hpp"
+#include "../include/Config.hpp"
 #include <ws2tcpip.h>
 #include <iostream>
 #include <sstream>
@@ -10,14 +13,17 @@ void listener_thread(std::atomic<bool>& exit, SOCKET& listenSocket) {
     int addrLen = sizeof(clientAddr);
     char buffer[64];
 
+    std::unique_ptr<DataFactory> sim_factory = DataFactory::getFactory(ConfigManager::getInstance().get().simType);
+    IDataModel& dataModel = sim_factory->getModel();
+
     while (!exit) {
         int bytes = recvfrom(listenSocket, buffer, sizeof(buffer) - 1, 0, (sockaddr*)&clientAddr, &addrLen);
         if (bytes > 0) {
             buffer[bytes] = '\0';
             if (strncmp(buffer, "START", 5) == 0) {
-                DataModel::getInstance().addClient(clientAddr);
+                dataModel.addClient(clientAddr);
             }else if(strncmp(buffer, "STOP", 4) == 0) {
-                DataModel::getInstance().removeClient(clientAddr);
+                dataModel.removeClient(clientAddr);
             }
         }else if (bytes == 0) {
             // UDP è connectionless, ma su alcuni sistemi bytes == 0 può indicare shutdown
@@ -34,10 +40,13 @@ void listener_thread(std::atomic<bool>& exit, SOCKET& listenSocket) {
             // Se arrivi qui, c'è un problema vero
             std::cerr << "[CRITICAL] Errore recvfrom: " << error << std::endl;
 
-            // Se l'errore è 10004 (WSAEINTR), è un'interruzione esterna
-            // Se l'errore è 10038, il socket non è più un socket valido!
-            if (error == WSAENOTSOCK || error == WSAECONNRESET) {
+            if (error == WSAENOTSOCK) {
                 break; // Esci dal loop perché il socket è andato
+            }
+            else if (error == WSAECONNRESET) {
+                // Questo errore può accadere se un client invia un pacchetto a un socket chiuso
+				std::cout << "[Listener] Ricevuto pacchetto da client disconnesso." << std::endl;
+			    dataModel.removeClient(clientAddr);
             }
         }
     }

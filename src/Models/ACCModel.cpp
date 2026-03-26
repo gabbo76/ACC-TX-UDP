@@ -1,31 +1,30 @@
-/*
-#define WIN32_LEAN_AND_MEAN
+#include "../../include/IDataModel.hpp"
+#include "../include/SharedFileOut.h"
+#include "../include/Models/ACCModel.hpp"
 
-#include "../include/DataModel.hpp"
-#include <ws2tcpip.h>
-
-DataModel& DataModel::getInstance() {
-    // Questa riga viene eseguita SOLO la prima volta che chiami il metodo
-    static DataModel instance;
+ACCModel& ACCModel::getInstance() {
+    std::lock_guard<std::mutex> lock(_instanceMutex);
+    static ACCModel instance;
     return instance;
 }
 
-void DataModel::updateData(SPageFileGraphic& g, SPageFilePhysics& p, SPageFileStatic& s) {
-	// Locking the mutex (only 1 can write at the same time)
-    std::unique_lock<std::shared_mutex> lock(_dataMutex);
-    graphicsData = g;
-    physicsData = p;
-	staticData = s;
+void ACCModel::updateData (void* data) {
+    // Cast data to DataRcv to access the three structures
+	std::unique_lock<std::shared_mutex> lock(_dataMutex);
+	DataRcv* rcvData = static_cast<DataRcv*>(data);
+	graphicsData = rcvData->g;
+	physicsData = rcvData->p;
+	staticData = rcvData->s;
 }
 
-Packet DataModel::getPacket() {
+Packet ACCModel::getPacket() {
     // Locking the mutex (more than 1 can read at the same time)
 
     SPageFileGraphic g_snap;
     SPageFilePhysics p_snap;
     SPageFileStatic s_snap;
 
-	// Making a snap of the data to minimize the time we hold the lock
+    // Making a snap of the data to minimize the time we hold the lock
     {
         std::shared_lock<std::shared_mutex> lock(_dataMutex);
         g_snap = graphicsData;
@@ -42,7 +41,7 @@ Packet DataModel::getPacket() {
     packet.rpm = p_snap.rpm;
     packet.steerAngle = p_snap.steerAngle;
     packet.speedKmh = p_snap.speedKmh;
-          
+
     for (int i = 0; i < 3; i++) {
         packet.accG[i] = p_snap.accG[i];
     }
@@ -95,30 +94,7 @@ Packet DataModel::getPacket() {
     wcsncpy_s(packet.lastTime, g_snap.lastTime, 14);
     wcsncpy_s(packet.bestTime, g_snap.bestTime, 14);
     wcsncpy_s(packet.split, g_snap.split, 14)
-
+    */
     return packet;
 }
 
-void DataModel::addClient(const sockaddr_in& clientAddr) {
-    std::lock_guard<std::mutex> lock(_clientsMutex);
-
-    auto result = _activeClients.insert({ clientAddr });
-
-    if (result.second) {
-        char ip[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &clientAddr.sin_addr, ip, INET_ADDRSTRLEN);
-        std::cout << "[DATAMODEL] Nuovo client registrato: " << ip
-            << ":" << ntohs(clientAddr.sin_port) << std::endl;
-    }
-}
-
-void DataModel::removeClient(const sockaddr_in& clientAddr) {
-    std::lock_guard<std::mutex> lock(_clientsMutex);
-    _activeClients.erase({ clientAddr });
-}
-
-std::set<ClientAddress> DataModel::getClients() {
-    std::lock_guard<std::mutex> lock(_clientsMutex);
-    return _activeClients;
-}
-*/
