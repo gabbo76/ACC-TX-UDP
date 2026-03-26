@@ -38,7 +38,7 @@ void listener_thread(std::atomic<bool>& exit, SOCKET& listenSocket) {
             }
 
             // Se arrivi qui, c'è un problema vero
-            std::cerr << "[CRITICAL] Errore recvfrom: " << error << std::endl;
+            std::cerr << "[Listener] Error in recvfrom: " << error << std::endl;
 
             if (error == WSAENOTSOCK) {
                 break; // Esci dal loop perché il socket è andato

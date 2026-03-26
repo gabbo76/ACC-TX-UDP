@@ -6,7 +6,7 @@
 constexpr int  DEFAULT_SERVER_PORT = 9999;
 constexpr int  DEFAULT_UPDATE_HZ = 60;
 constexpr char CONFIG_FILE_PATH[] = "config.ini";
-#define DEFAULT_SIM_TYPE "ACC"
+constexpr char DEFAULT_SIM_TYPE[] = "ACC";
 
 struct Config {
     int serverPort;  // Port used both to receive START/STOP and send telemetry

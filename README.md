@@ -80,6 +80,8 @@ then create the concrete class in the "src" folder, include the header of the ob
 
 ***THE MODEL MUST IMPLEMENT THE UPDATEDATA METHOD***
 
+## Troubleshooting
+Sometimes the linker throws an error linking DataFactory.cpp, to fix it compile DataFactory.cpp separately and then compile the whole project.
 
 ## License
 

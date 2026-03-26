@@ -106,6 +106,7 @@ public:
 
     void removeClient(const sockaddr_in& clientAddr) {
         std::lock_guard<std::mutex> lock(_clientsMutex);
+        std::cout << "[DATAMODEL] Client rimosso" << std::endl;
         _activeClients.erase({ clientAddr });
     }
 

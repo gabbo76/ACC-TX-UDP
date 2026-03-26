@@ -119,6 +119,10 @@ int main() {
 	if (sim == "ACC") {
 		sim_factory = std::make_unique<ACCFactory>();
 	}
+	else {
+		std::cout << "[ERROR] Simulation type not supported: " << sim << std::endl;
+		return 1;
+	}
 
 	if (!initialized) {
 		std::cout << "[START] Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;

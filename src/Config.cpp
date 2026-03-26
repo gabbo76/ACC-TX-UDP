@@ -72,7 +72,7 @@ bool ConfigManager::load() {
     }
 
     std::cout << "[CONFIG] Loaded: serverPort=" << _config.serverPort
-        << " updateHz=" << _config.updateHz << std::endl;
+        << " updateHz=" << _config.updateHz << " sim=" << _config.simType << std::endl;
 
     return true;
 }
