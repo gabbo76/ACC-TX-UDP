@@ -2,6 +2,10 @@
 
 void readInputThread(std::atomic<bool>& exit){
 
+    std::unique_ptr<DataFactory> factory = DataFactory::getFactory(ConfigManager::getInstance().get().simType);
+
+    IDataModel& dataModel = factory->getModel();
+
     while (!exit) {
         if (GetAsyncKeyState(VK_RCONTROL) & 0x8000) {
 
@@ -19,7 +23,7 @@ void readInputThread(std::atomic<bool>& exit){
                 int result = inet_pton(AF_INET, newIp.c_str(), &(sa.sin_addr));
 
                 if (result == 1) {
-                    DataModel::getInstance().addClient(sa);
+                    dataModel.addClient(sa);
                 }
                 else {
                     std::cout << "[ERRORE] IP not valid: " << newIp << std::endl;

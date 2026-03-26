@@ -1,21 +1,29 @@
+#pragma once
+
 #include "../include/SharedMemoryReaderThread.hpp"
+#include "../include/DataFactory.hpp"
 
 void readSharedMemoryThread(std::atomic<bool>& exit) {
 
 	int sleepMs = ConfigManager::getInstance().get().sleepMs();
 
-	SPageFileGraphic g;
-	SPageFilePhysics p;
-	SPageFileStatic s;
+	std::unique_ptr<DataFactory> factory = DataFactory::getFactory(ConfigManager::getInstance().get().simType);
+
+	void* data = NULL;
+
+	if(ConfigManager::getInstance().get().simType == "ACC") {
+		// Allocate data to host data for ACC
+		data = malloc(sizeof(ACCData));
+	}
+
+	IDataModel& model = factory->getModel();
+	DataReaders& reader = factory->getReader();
 
 	while (!exit) {
 
-		ReadPhysics(&p);
-		ReadGraphics(&g);
-		ReadStatic(&s);
+		reader.ReadData(data);
+		model.updateData(data);
 
-		DataModel::getInstance().updateData(g, p, s);
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs)); // Sleep for 16ms to achieve ~60Hz update rateù
+		std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
 	}
 }

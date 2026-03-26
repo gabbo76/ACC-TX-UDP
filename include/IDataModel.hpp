@@ -1,18 +1,13 @@
+#ifndef IDATAMODEL_HPP
+#define IDATAMODEL_HPP
 
-/*
-#define WIN32_LEAN_AND_MEAN
-
-#ifndef DATAMODEL_HPP
-#define DATAMODEL_HPP
-
-
-#include "../include/SharedFileOut.h"
 #include "../include/ReadData.h"
 #include <mutex>
 #include <set>
 #include <shared_mutex>
 #include <WinSock2.h>
 #include <Windows.h>
+#include <ws2tcpip.h>
 
 struct ClientAddress {
     sockaddr_in addr;
@@ -83,45 +78,58 @@ struct _packet {
 
 typedef struct _packet Packet;
 
+class IDataModel {
 
-class DataModel {
 public:
-	static DataModel& getInstance();
-	DataModel(const DataModel&) = delete;
-	void operator=(const DataModel&) = delete;
 
-	// Update data
-	void updateData(SPageFileGraphic& g, SPageFilePhysics& p, SPageFileStatic& s);
+    virtual IDataModel& operator=(const IDataModel&) = delete;
+    virtual ~IDataModel() = default;
 
-	// Get packet
-	Packet getPacket();
+    // Update data
+    virtual void updateData(void* data) = 0;
 
-    // Add client to the list
-    void addClient(const sockaddr_in& clientAddr);
+    // Get packet
+    virtual Packet getPacket() = 0;
 
-    // Remove a client from the list
-    void removeClient(const sockaddr_in& clientAddr);
+    void addClient(const sockaddr_in& clientAddr) {
+        std::lock_guard<std::mutex> lock(_clientsMutex);
 
-	//Returns a set with all the clients currently connected
-    std::set<ClientAddress> getClients();
+        auto result = _activeClients.insert({ clientAddr });
 
-private:
-	DataModel() {};
+        if (result.second) {
+            char ip[INET_ADDRSTRLEN];
+            inet_ntop(AF_INET, &clientAddr.sin_addr, ip, INET_ADDRSTRLEN);
+            std::cout << "[DATAMODEL] Nuovo client registrato: " << ip
+                << ":" << ntohs(clientAddr.sin_port) << std::endl;
+        }
+    }
 
+    void removeClient(const sockaddr_in& clientAddr) {
+        std::lock_guard<std::mutex> lock(_clientsMutex);
+        std::cout << "[DATAMODEL] Client rimosso" << std::endl;
+        _activeClients.erase({ clientAddr });
+    }
 
-	// Mutex for writing/reading the data
-	mutable std::shared_mutex _dataMutex;
+    std::set<ClientAddress> getClients() {
+        std::lock_guard<std::mutex> lock(_clientsMutex);
+        return _activeClients;
+    }
+
+protected: 
+    IDataModel() {}
+
+    // Mutex for writing/reading the data
+    static std::shared_mutex _dataMutex;
 
     // Mutex for writing/reading the clients list
-    mutable std::mutex _clientsMutex;
+    static std::mutex _clientsMutex;
 
-    // Private copy of the structs read from the shared memory used to create the packet
-	SPageFileGraphic graphicsData;
-	SPageFilePhysics physicsData;
-	SPageFileStatic staticData;
-
+    // Active clients
     std::set<ClientAddress> _activeClients;
+
+    // Mutex for the instance
+    static std::mutex _instanceMutex;
+
 };
 
 #endif
-*/

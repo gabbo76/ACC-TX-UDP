@@ -8,9 +8,10 @@
 #include <iostream>
 #include "../include/ReadData.h"
 #include <winsock2.h>
-#include "../include/DataModel.hpp"
+#include "../include/DataFactory.hpp"
 #include <WS2tcpip.h>
 #include "../include/GlobalDebug.hpp"
+#include "../include/Config.hpp"
 
 #pragma comment(lib, "ws2_32.lib")
 
