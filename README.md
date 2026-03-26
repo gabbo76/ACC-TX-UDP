@@ -71,7 +71,7 @@ Once registered, the client receives a binary `Packet` struct at the configured 
 ## Adding new sims
 
 To add support for new racing sims, add NewSimFactory.hpp inside "Factory" folder in "include", it must implement "DataFactory" interface.
-Create the concrete Factory in "src/Factory" folder, the concrete factory must include his own header, the sepcific reader header and specific model header.
+Create the concrete Factory in "src/Factory" folder, the concrete factory must include his own header, the specific reader header and specific model header.
 EX: ACCFactory.cpp includes "ACCFactory.hpp", "ACCReader.hpp" and "ACCModel.hpp".
 Then, in the "src/DataFactory.ccp" add the header of the factory and inside thegetFactory method add your own case.
 
