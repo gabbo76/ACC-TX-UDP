@@ -30,12 +30,16 @@ serverPort=9999
 
 [telemetry]
 updateHz=60
+
+[sim]
+simType=ACC
 ```
 
 | Parameter    | Description                              | Default |
 |--------------|------------------------------------------|---------|
 | `serverPort` | UDP port used for registration and data  | 9999    |
 | `updateHz`   | Telemetry broadcast frequency (1–120 Hz) | 60      |
+| `simType`    | String to select the sim                 | ACC     |
 
 ---
 
