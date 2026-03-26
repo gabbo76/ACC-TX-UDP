@@ -1,7 +1,6 @@
 #include "../../include/Factory/ACCFactory.hpp"
 #include "../../include/Models/ACCModel.hpp"
 #include "../../include/DataReaders/ACCReader.hpp"
-#include <DataFactory.hpp>
 
 DataReaders& ACCFactory::getReader() {
 	return ACCReader::getInstance();
