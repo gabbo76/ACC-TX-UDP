@@ -25,6 +25,9 @@ void listener_thread(std::atomic<bool>& exit, SOCKET& listenSocket) {
             }else if(strncmp(buffer, "STOP", 4) == 0) {
                 dataModel.removeClient(clientAddr);
             }
+            else if (strncmp(buffer, "ALIVE", 5) == 0) {
+                dataModel.updateLastSeenClient(clientAddr);
+            }
         }else if (bytes == 0) {
             // UDP è connectionless, ma su alcuni sistemi bytes == 0 può indicare shutdown
             std::cout << "[Listener] Ricevuto pacchetto vuoto o shutdown." << std::endl;

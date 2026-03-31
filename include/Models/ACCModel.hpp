@@ -26,7 +26,7 @@ protected:
     SPageFileStatic staticData{};
 
     // Active clients
-    std::set<ClientAddress> _activeClients;
+    std::map<ClientAddress, Timestamp> _activeClients;
 
 
 };

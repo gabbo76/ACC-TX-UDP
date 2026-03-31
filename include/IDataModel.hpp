@@ -1,13 +1,13 @@
 #ifndef IDATAMODEL_HPP
 #define IDATAMODEL_HPP
-
-#include "../include/ReadData.h"
 #include <mutex>
-#include <set>
+#include <map>
+#include <ctime>
 #include <shared_mutex>
 #include <WinSock2.h>
 #include <Windows.h>
 #include <ws2tcpip.h>
+#include <iostream>
 
 struct ClientAddress {
     sockaddr_in addr;
@@ -58,8 +58,8 @@ struct _packet {
     int starterEngineOn = 0;
     int isEngineRunning = 0;
 
-    AC_STATUS status = AC_OFF;
-    AC_SESSION_TYPE session = AC_PRACTICE;
+    int status = 0;
+    int session = 0;
     wchar_t currentTime[15]{};
     wchar_t lastTime[15]{};
     wchar_t bestTime[15]{};
@@ -71,16 +71,23 @@ struct _packet {
     int iBestTime = 0;
     float sessionTimeLeft = 0;
 
-    AC_FLAG_TYPE flag = AC_NO_FLAG;
+    int flag = 0;
     int fuelXLap = 0;
 
 };
 
 typedef struct _packet Packet;
 
+using Timestamp = std::chrono::steady_clock::time_point;
+
 class IDataModel {
 
 public:
+
+    long long getElapsedSeconds(Timestamp past) {
+        auto now = std::chrono::steady_clock::now();
+        return std::chrono::duration_cast<std::chrono::seconds>(now - past).count();
+    }
 
     virtual IDataModel& operator=(const IDataModel&) = delete;
     virtual ~IDataModel() = default;
@@ -93,8 +100,10 @@ public:
 
     void addClient(const sockaddr_in& clientAddr) {
         std::lock_guard<std::mutex> lock(_clientsMutex);
-
-        auto result = _activeClients.insert({ clientAddr });
+        auto now = std::chrono::steady_clock::now();
+        ClientAddress client;
+        client.addr = clientAddr;
+        auto result = _activeClients.emplace(client, now);
 
         if (result.second) {
             char ip[INET_ADDRSTRLEN];
@@ -106,11 +115,23 @@ public:
 
     void removeClient(const sockaddr_in& clientAddr) {
         std::lock_guard<std::mutex> lock(_clientsMutex);
+        ClientAddress client_to_remove;
+        client_to_remove.addr = clientAddr;
         std::cout << "[DATAMODEL] Client rimosso" << std::endl;
-        _activeClients.erase({ clientAddr });
+        _activeClients.erase(client_to_remove);
     }
 
-    std::set<ClientAddress> getClients() {
+    void updateLastSeenClient(const sockaddr_in& clientAddr) {
+        std::lock_guard<std::mutex> lock(_clientsMutex);
+		ClientAddress client;
+		client.addr = clientAddr;
+		auto it = _activeClients.find(client);
+		if (it != _activeClients.end()) {
+			it->second = std::chrono::steady_clock::now();
+		}
+    }
+
+    std::map<ClientAddress, Timestamp> getClients() {
         std::lock_guard<std::mutex> lock(_clientsMutex);
         return _activeClients;
     }
@@ -125,7 +146,7 @@ protected:
     static std::mutex _clientsMutex;
 
     // Active clients
-    std::set<ClientAddress> _activeClients;
+    std::map<ClientAddress, Timestamp> _activeClients;
 
     // Mutex for the instance
     static std::mutex _instanceMutex;

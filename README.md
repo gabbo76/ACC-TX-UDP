@@ -2,15 +2,15 @@
 
 A lightweight UDP telemetry server for **Assetto Corsa Competizione**.
 
-It reads real-time data from ACC's shared memory and broadcasts it over UDP to one or more connected clients.
+It reads real-time data from drving sims shared memory and broadcasts it over UDP to one or more connected clients.
 
 ---
 
 ## Requirements
 
-- Windows (ACC shared memory is Windows-only)
+- Windows 
 - Visual Studio 2019 or later
-- Assetto Corsa Competizione running on the same machine
+- Any sim compatible running on the same machine
 
 ---
 
@@ -49,10 +49,13 @@ Clients communicate with the server over UDP on `serverPort`.
 
 | Message | Direction       | Effect                                          |
 |---------|-----------------|-------------------------------------------------|
-| `START` | Client → Server | Registers the client, starts receiving telemetry |
+| `START` | Client → Server | Registers the client, starts receiving telemetry|
 | `STOP`  | Client → Server | Unregisters the client                          |
+| `ALIVE`  | Client → Server | Keep the connection alive                       |
 
 Once registered, the client receives a binary `Packet` struct at the configured frequency.
+
+If the client doesn't send a "ALIVE" packet within 30 seconds it will be automatically disconnected
 
 > **Manual registration:** pressing **Right Ctrl** in the server console allows manually entering a client IP address, useful if the client cannot send a `START` packet for any reason.
 
@@ -62,7 +65,7 @@ Once registered, the client receives a binary `Packet` struct at the configured 
 
 | Component | Description |
 |---|---|
-| `SharedMemoryReaderThread` | Reads ACC shared memory at the configured Hz and updates the DataModel |
+| `SharedMemoryReaderThread` | Reads shared memory at the configured Hz and updates a DataModel |
 | `ClientHandler` | Listens for incoming `START` packets and registers new clients |
 | `InputReaderThread` | Monitors keyboard for manual client registration (Right Ctrl) |
 | `DataModel` | Thread-safe singleton holding the current telemetry snapshot and client list |

@@ -1,12 +1,9 @@
 #ifndef INPUT_READER_THREAD_HPP
 #define INPUT_READER_THREAD_HPP
 
-#define WIN32_LEAN_AND_MEAN
-
 #include <atomic>
 #include <sstream>
 #include <iostream>
-#include "../include/ReadData.h"
 #include <winsock2.h>
 #include "../include/DataFactory.hpp"
 #include <WS2tcpip.h>

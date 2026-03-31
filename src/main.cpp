@@ -1,6 +1,5 @@
 #define WIN32_LEAN_AND_MEAN
 
-#include "../include/ReadData.h"
 //#include "../include/DataModel.hpp"
 #include "../include/ClientHandler.hpp"
 #include "../include/ThreadManager.hpp"
@@ -187,7 +186,7 @@ int main() {
 
 
 	// Active clients set
-	std::set<ClientAddress> activeClients;
+	std::map<ClientAddress, Timestamp> activeClients;
 
 	int sleepMs = ConfigManager::getInstance().get().sleepMs();
 
@@ -199,7 +198,14 @@ int main() {
 
 		activeClients = model.getClients();
 		for (const auto& client : activeClients) {
-			int res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&client.addr, sizeof(client.addr));
+			
+			// More than 30s from the last message, client get disconnected
+			if (model.getElapsedSeconds(client.second) > 30) {
+				model.removeClient(client.first.addr);
+				continue;
+			}
+
+			int res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&client.first.addr, sizeof(client.first.addr));
 
 			if (res == SOCKET_ERROR) {
 				int err = WSAGetLastError();
@@ -219,7 +225,9 @@ int main() {
 	// Wait for all threads to finish
 	ThreadManager::getInstance().joinAll();
 
-	DismissSM();
+	// Dismiss Shared Memory
+	sim_factory->getReader().DismissSM();
+
 	WSACleanup();
 	SetEvent(readyToExit);
 	CloseHandle(readyToExit);
