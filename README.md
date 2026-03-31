@@ -1,6 +1,6 @@
 # ACC-TX-UDP
 
-A lightweight UDP telemetry server for **Assetto Corsa Competizione**.
+A lightweight UDP telemetry server for **ANY SIM**.
 
 It reads real-time data from drving sims shared memory and broadcasts it over UDP to one or more connected clients.
 
