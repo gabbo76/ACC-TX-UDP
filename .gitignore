@@ -363,8 +363,8 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Visual Studio project files
-*.sln
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
+#*.sln
+#*.vcxproj
+#*.vcxproj.filters
+#*.vcxproj.user
 /debug_shutdown.txt
