@@ -1,7 +1,8 @@
 #ifndef IDATAMODEL_HPP
 #define IDATAMODEL_HPP
 #include <mutex>
-#include <set>
+#include <map>
+#include <ctime>
 #include <shared_mutex>
 #include <WinSock2.h>
 #include <Windows.h>
@@ -77,9 +78,16 @@ struct _packet {
 
 typedef struct _packet Packet;
 
+using Timestamp = std::chrono::steady_clock::time_point;
+
 class IDataModel {
 
 public:
+
+    long long getElapsedSeconds(Timestamp past) {
+        auto now = std::chrono::steady_clock::now();
+        return std::chrono::duration_cast<std::chrono::seconds>(now - past).count();
+    }
 
     virtual IDataModel& operator=(const IDataModel&) = delete;
     virtual ~IDataModel() = default;
@@ -92,8 +100,10 @@ public:
 
     void addClient(const sockaddr_in& clientAddr) {
         std::lock_guard<std::mutex> lock(_clientsMutex);
-
-        auto result = _activeClients.insert({ clientAddr });
+        auto now = std::chrono::steady_clock::now();
+        ClientAddress client;
+        client.addr = clientAddr;
+        auto result = _activeClients.emplace(client, now);
 
         if (result.second) {
             char ip[INET_ADDRSTRLEN];
@@ -105,11 +115,23 @@ public:
 
     void removeClient(const sockaddr_in& clientAddr) {
         std::lock_guard<std::mutex> lock(_clientsMutex);
+        ClientAddress client_to_remove;
+        client_to_remove.addr = clientAddr;
         std::cout << "[DATAMODEL] Client rimosso" << std::endl;
-        _activeClients.erase({ clientAddr });
+        _activeClients.erase(client_to_remove);
     }
 
-    std::set<ClientAddress> getClients() {
+    void updateLastSeenClient(const sockaddr_in& clientAddr) {
+        std::lock_guard<std::mutex> lock(_clientsMutex);
+		ClientAddress client;
+		client.addr = clientAddr;
+		auto it = _activeClients.find(client);
+		if (it != _activeClients.end()) {
+			it->second = std::chrono::steady_clock::now();
+		}
+    }
+
+    std::map<ClientAddress, Timestamp> getClients() {
         std::lock_guard<std::mutex> lock(_clientsMutex);
         return _activeClients;
     }
@@ -124,7 +146,7 @@ protected:
     static std::mutex _clientsMutex;
 
     // Active clients
-    std::set<ClientAddress> _activeClients;
+    std::map<ClientAddress, Timestamp> _activeClients;
 
     // Mutex for the instance
     static std::mutex _instanceMutex;

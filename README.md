@@ -45,10 +45,13 @@ Clients communicate with the server over UDP on `serverPort`.
 
 | Message | Direction       | Effect                                          |
 |---------|-----------------|-------------------------------------------------|
-| `START` | Client → Server | Registers the client, starts receiving telemetry |
+| `START` | Client → Server | Registers the client, starts receiving telemetry|
 | `STOP`  | Client → Server | Unregisters the client                          |
+| `ALIVE`  | Client → Server | Keep the connection alive                       |
 
 Once registered, the client receives a binary `Packet` struct at the configured frequency.
+
+If the client doesn't send a "ALIVE" packet within 30 seconds it will be automatically disconnected
 
 > **Manual registration:** pressing **Right Ctrl** in the server console allows manually entering a client IP address, useful if the client cannot send a `START` packet for any reason.
 
