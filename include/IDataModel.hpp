@@ -1,13 +1,12 @@
 #ifndef IDATAMODEL_HPP
 #define IDATAMODEL_HPP
-
-#include "../include/ReadData.h"
 #include <mutex>
 #include <set>
 #include <shared_mutex>
 #include <WinSock2.h>
 #include <Windows.h>
 #include <ws2tcpip.h>
+#include <iostream>
 
 struct ClientAddress {
     sockaddr_in addr;
@@ -58,8 +57,8 @@ struct _packet {
     int starterEngineOn = 0;
     int isEngineRunning = 0;
 
-    AC_STATUS status = AC_OFF;
-    AC_SESSION_TYPE session = AC_PRACTICE;
+    int status = 0;
+    int session = 0;
     wchar_t currentTime[15]{};
     wchar_t lastTime[15]{};
     wchar_t bestTime[15]{};
@@ -71,7 +70,7 @@ struct _packet {
     int iBestTime = 0;
     float sessionTimeLeft = 0;
 
-    AC_FLAG_TYPE flag = AC_NO_FLAG;
+    int flag = 0;
     int fuelXLap = 0;
 
 };

@@ -1,6 +1,5 @@
 #define WIN32_LEAN_AND_MEAN
 
-#include "../include/ReadData.h"
 //#include "../include/DataModel.hpp"
 #include "../include/ClientHandler.hpp"
 #include "../include/ThreadManager.hpp"
@@ -219,7 +218,9 @@ int main() {
 	// Wait for all threads to finish
 	ThreadManager::getInstance().joinAll();
 
-	DismissSM();
+	// Dismiss Shared Memory
+	sim_factory->getReader().DismissSM();
+
 	WSACleanup();
 	SetEvent(readyToExit);
 	CloseHandle(readyToExit);
