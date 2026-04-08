@@ -1,5 +1,4 @@
 #include "../include/ClientHandler.hpp"
-//#include "../include/DataModel.hpp"
 #include "../include/DataFactory.hpp"
 #include "../include/IDataModel.hpp"
 #include "../include/Config.hpp"
@@ -20,35 +19,37 @@ void listener_thread(std::atomic<bool>& exit, SOCKET& listenSocket) {
         int bytes = recvfrom(listenSocket, buffer, sizeof(buffer) - 1, 0, (sockaddr*)&clientAddr, &addrLen);
         if (bytes > 0) {
             buffer[bytes] = '\0';
+
+            // Adding new client
             if (strncmp(buffer, "START", 5) == 0) {
                 dataModel.addClient(clientAddr);
+
+            //Removing a client
             }else if(strncmp(buffer, "STOP", 4) == 0) {
                 dataModel.removeClient(clientAddr);
             }
+
+            // Updating last seen for alive client
             else if (strncmp(buffer, "ALIVE", 5) == 0) {
                 dataModel.updateLastSeenClient(clientAddr);
             }
         }else if (bytes == 0) {
-            // UDP è connectionless, ma su alcuni sistemi bytes == 0 può indicare shutdown
-            std::cout << "[Listener] Ricevuto pacchetto vuoto o shutdown." << std::endl;
+            // UDP connectionless
+            std::cout << "[Listener] Received empty packet." << std::endl;
         }else {
             int error = WSAGetLastError();
 
-            // Se exit è true, l'errore è normale (abbiamo chiuso il socket dal main)
             if (exit) {
-                std::cout << "[Listener] Chiusura programmata sbloccata." << std::endl;
                 break;
             }
 
-            // Se arrivi qui, c'è un problema vero
+            // ERROR
             std::cerr << "[Listener] Error in recvfrom: " << error << std::endl;
 
             if (error == WSAENOTSOCK) {
-                break; // Esci dal loop perché il socket è andato
+                break;
             }
             else if (error == WSAECONNRESET) {
-                // Questo errore può accadere se un client invia un pacchetto a un socket chiuso
-				std::cout << "[Listener] Ricevuto pacchetto da client disconnesso." << std::endl;
 			    dataModel.removeClient(clientAddr);
             }
         }

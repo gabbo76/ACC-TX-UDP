@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\DataFactory.hpp" />
+    <ClCompile Include="src\DataReaders\R3EReader.cpp" />
     <ClCompile Include="src\utils\ClientHandler.cpp" />
     <ClCompile Include="src\Config.cpp" />
     <ClCompile Include="src\utils\DataFactory.cpp" />
@@ -33,16 +34,20 @@
     <ClCompile Include="src\utils\ThreadManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Downloads\r3e.h" />
     <ClInclude Include="include\ClientHandler.hpp" />
     <ClInclude Include="include\Config.hpp" />
     <ClInclude Include="include\DataReaders.hpp" />
     <ClInclude Include="include\DataReaders\ACCReader.hpp" />
+    <ClInclude Include="include\DataReaders\R3EReader.hpp" />
     <ClInclude Include="include\Factory\ACCFactory.hpp" />
     <ClInclude Include="include\GlobalDebug.hpp" />
     <ClInclude Include="include\IDataModel.hpp" />
     <ClInclude Include="include\InputReaderThread.hpp" />
-    <ClInclude Include="include\Models\ACCModel.hpp" />
-    <ClInclude Include="include\SharedFileOut.h" />
+    <ClInclude Include="include\Models\ACC\ACCModel.hpp" />
+    <ClInclude Include="include\Models\ACC\SharedFileOut.h" />
+    <ClInclude Include="include\Models\R3E\r3e.h" />
+    <ClInclude Include="include\Models\R3E\R3EModel.hpp" />
     <ClInclude Include="include\SharedMemoryReaderThread.hpp" />
     <ClInclude Include="include\ThreadManager.hpp" />
   </ItemGroup>

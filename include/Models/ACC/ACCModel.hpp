@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../include/IDataModel.hpp"
-#include "../include/SharedFileOut.h"
+#include "../../IDataModel.hpp"
+#include "../include/Models/ACC/SharedFileOut.h"
 
 
 typedef struct DataRcv {

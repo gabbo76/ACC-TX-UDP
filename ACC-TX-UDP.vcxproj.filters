@@ -51,6 +51,9 @@
     <ClCompile Include="src\utils\IDataModel.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="src\DataReaders\R3EReader.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ClientHandler.hpp">
@@ -65,7 +68,7 @@
     <ClInclude Include="include\InputReaderThread.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="include\SharedFileOut.h">
+    <ClInclude Include="include\Models\ACC\SharedFileOut.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="include\SharedMemoryReaderThread.hpp">
@@ -83,10 +86,22 @@
     <ClInclude Include="include\Factory\ACCFactory.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="include\Models\ACCModel.hpp">
+    <ClInclude Include="include\Models\ACC\ACCModel.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="include\DataReaders\ACCReader.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Models\R3E\R3EModel.hpp">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Downloads\r3e.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Models\R3E\r3e.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DataReaders\R3EReader.hpp">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

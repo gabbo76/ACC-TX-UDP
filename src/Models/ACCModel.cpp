@@ -1,6 +1,6 @@
 #include "../../include/IDataModel.hpp"
-#include "../include/SharedFileOut.h"
-#include "../include/Models/ACCModel.hpp"
+#include "../include/Models/ACC/SharedFileOut.h"
+#include "../include/Models/ACC/ACCModel.hpp"
 
 ACCModel& ACCModel::getInstance() {
     std::lock_guard<std::mutex> lock(_instanceMutex);
