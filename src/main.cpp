@@ -192,8 +192,13 @@ int main() {
 
 	IDataModel& model = sim_factory->getModel();
 
+	auto nextTick = std::chrono::steady_clock::now();
+
 	// This thread sends data
 	while (!exit) {
+		
+		nextTick += std::chrono::milliseconds(sleepMs);
+
 		payload = model.getPacket();
 
 		activeClients = model.getClients();
@@ -214,7 +219,7 @@ int main() {
 			
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
+		std::this_thread::sleep_until(nextTick);
 	}
 
 	// Exit phase

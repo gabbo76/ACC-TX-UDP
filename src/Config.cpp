@@ -11,7 +11,8 @@ ConfigManager& ConfigManager::getInstance() {
 void ConfigManager::setDefaults() {
     _config.serverPort = DEFAULT_SERVER_PORT;
     _config.updateHz = DEFAULT_UPDATE_HZ;
-    _config.simType = DEFAULT_SIM_TYPE; // Inizializziamo il default
+    _config.simType = DEFAULT_SIM_TYPE;
+    _config.multicastIp = DEFAULT_MULTICAST_IP;
 }
 
 bool ConfigManager::writeDefaults() {
@@ -29,6 +30,9 @@ bool ConfigManager::writeDefaults() {
     f << "\n";
     f << "[sim]\n";
     f << "simType=" << DEFAULT_SIM_TYPE << "\n";
+    f << "\n";
+    f << "[multicast]\n";
+    f << "ip=" << DEFAULT_MULTICAST_IP << "\n";
 
     std::cout << "[CONFIG] Config file created with defaults: " << CONFIG_FILE_PATH << std::endl;
     return true;
@@ -59,6 +63,7 @@ bool ConfigManager::load() {
             if (key == "serverPort") _config.serverPort = std::stoi(value);
             else if (key == "updateHz")   _config.updateHz = std::stoi(value);
             else if (key == "simType")   _config.simType = value;
+			else if (key == "ip")        _config.multicastIp = value;
         }
         catch (const std::exception&) {
             std::cerr << "[CONFIG] Invalid value for key '" << key << "', using default." << std::endl;
