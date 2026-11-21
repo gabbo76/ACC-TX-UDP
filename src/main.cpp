@@ -15,6 +15,7 @@
 #include <thread>
 #include <sstream>
 #include <fstream>
+#include <string>
 
 #include "../include/DataFactory.hpp"
 #include <Factory/ACCFactory.hpp>
@@ -64,6 +65,28 @@ void setForeground(const char* win_title) {
 	}
 }
 
+std::string getLocalIPv4() {
+	char hostname[256] = "";
+	if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR) {
+		return "127.0.0.1";
+	}
+
+	addrinfo hints{};
+	hints.ai_family = AF_INET; // IPv4
+	hints.ai_socktype = SOCK_DGRAM;
+
+	addrinfo* res = nullptr;
+	if (getaddrinfo(hostname, nullptr, &hints, &res) != 0 || res == nullptr) {
+		return "127.0.0.1";
+	}
+
+	char ipStr[INET_ADDRSTRLEN] = "";
+	auto* ipv4 = reinterpret_cast<sockaddr_in*>(res->ai_addr);
+	inet_ntop(AF_INET, &(ipv4->sin_addr), ipStr, sizeof(ipStr));
+
+	freeaddrinfo(res);
+	return std::string(ipStr);
+}
 
 int main() {
 
@@ -170,7 +193,7 @@ int main() {
 		return 1;
 	}
 
-	std::cout << "[DEBUG] Server opened at port: " << ConfigManager::getInstance().get().serverPort << std::endl;
+	std::cout << "[DEBUG] Server opened at " << getLocalIPv4() << " port: " << ConfigManager::getInstance().get().serverPort << std::endl;
 
 
 	// Starting the threads if the S.M. is initialized correctly

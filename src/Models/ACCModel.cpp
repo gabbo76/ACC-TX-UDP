@@ -70,16 +70,16 @@ Packet ACCModel::getPacket() {
     packet.absInAction = p_snap.absInAction;
     packet.waterTemp = p_snap.waterTemp;
 
-    /*
+    
     packet.frontBrakeCompound = p_snap.frontBrakeCompound;
     packet.rearBrakeCompound = p_snap.rearBrakeCompound;
     packet.ignitionOn = p_snap.ignitionOn;
     packet.starterEngineOn = p_snap.starterEngineOn;
     packet.isEngineRunning = p_snap.isEngineRunning;
-    */
+    
 
-    /*
-    --- Dati grafici (SPageFileGraphic) --- (Bug fix: prima non venivano copiati!)
+    
+    //--- Dati grafici (SPageFileGraphic) --- (Bug fix: prima non venivano copiati!)
     packet.status = g_snap.status;
     packet.session = g_snap.session;
     packet.completedLaps = g_snap.completedLaps;
@@ -93,8 +93,8 @@ Packet ACCModel::getPacket() {
     wcsncpy_s(packet.currentTime, g_snap.currentTime, 14);
     wcsncpy_s(packet.lastTime, g_snap.lastTime, 14);
     wcsncpy_s(packet.bestTime, g_snap.bestTime, 14);
-    wcsncpy_s(packet.split, g_snap.split, 14)
-    */
+    wcsncpy_s(packet.split, g_snap.split, 14);
+    
     return packet;
 }
 
