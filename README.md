@@ -4,6 +4,10 @@ A lightweight UDP telemetry server for **ANY SIM**.
 
 It reads real-time data from drving sims shared memory and broadcasts it over UDP to one or more connected clients.
 
+As of now the following sims are supported:
+- Assetto Corsa Competizione (ACC)
+- RaceRoom Racing Experience (R3E) -- In progress
+
 ---
 
 ## Requirements
