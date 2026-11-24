@@ -225,6 +225,7 @@ int main() {
 		payload = model.getPacket();
 
 		activeClients = model.getClients();
+		int res = 0;
 		for (const auto& client : activeClients) {
 			
 			// More than 30s from the last message, client get disconnected
@@ -233,7 +234,11 @@ int main() {
 				continue;
 			}
 
-			int res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&client.first.addr, sizeof(client.first.addr));
+			if (payload.status == 0 || payload.status == 3) {
+				continue;
+			}
+
+			res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&client.first.addr, sizeof(client.first.addr));
 
 			if (res == SOCKET_ERROR) {
 				int err = WSAGetLastError();

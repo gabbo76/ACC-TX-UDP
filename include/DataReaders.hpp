@@ -9,6 +9,10 @@ typedef struct ACCData {
 	SPageFileStatic s;
 } ACCData;
 
+typedef struct R3EData {
+	// TODO
+} R3EData;;
+
 class DataReaders {
 public: 
 	virtual void ReadData(void* outData) = 0;
