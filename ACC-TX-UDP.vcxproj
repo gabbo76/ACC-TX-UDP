@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\DataFactory.hpp" />
+    <ClInclude Include="include\DataFactory.hpp" />
     <ClCompile Include="src\DataReaders\R3EReader.cpp" />
     <ClCompile Include="src\utils\ClientHandler.cpp" />
     <ClCompile Include="src\Config.cpp" />
-    <ClCompile Include="src\utils\DataFactory.cpp" />
+    <ClCompile Include="src\utils\DataFactory.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\DataReaders\ACCReader.cpp" />
     <ClCompile Include="src\Factory\ACCFactory.cpp" />
     <ClCompile Include="src\utils\IDataModel.cpp" />
