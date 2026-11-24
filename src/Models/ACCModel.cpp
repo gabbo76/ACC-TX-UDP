@@ -78,8 +78,6 @@ Packet ACCModel::getPacket() {
     packet.isEngineRunning = p_snap.isEngineRunning;
     
 
-    
-    //--- Dati grafici (SPageFileGraphic) --- (Bug fix: prima non venivano copiati!)
     packet.status = g_snap.status;
     packet.session = g_snap.session;
     packet.completedLaps = g_snap.completedLaps;
