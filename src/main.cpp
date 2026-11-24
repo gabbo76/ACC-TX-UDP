@@ -234,6 +234,7 @@ int main() {
 				continue;
 			}
 
+			// game paused or not in session, don't send data
 			if (payload.status == 0 || payload.status == 3) {
 				continue;
 			}
