@@ -146,6 +146,8 @@ int main() {
 		return 1;
 	}
 
+	std::cout << "[DEBUG] Server opened at " << getLocalIPv4() << " port: " << ConfigManager::getInstance().get().serverPort << std::endl;
+
 	if (!initialized) {
 		std::cout << "[START] Waiting for shared memory to be initialized...\nJoin a session to start." << std::endl;
 	}
@@ -193,9 +195,6 @@ int main() {
 		return 1;
 	}
 
-	std::cout << "[DEBUG] Server opened at " << getLocalIPv4() << " port: " << ConfigManager::getInstance().get().serverPort << std::endl;
-
-
 	// Starting the threads if the S.M. is initialized correctly
 	if (initialized) {
 		// Thread to listen for new clients
@@ -226,26 +225,28 @@ int main() {
 
 		activeClients = model.getClients();
 		int res = 0;
-		for (const auto& client : activeClients) {
-			
-			// More than 30s from the last message, client get disconnected
-			if (model.getElapsedSeconds(client.second) > 30) {
-				model.removeClient(client.first.addr);
-				continue;
-			}
+		if (!model.isClientListEmpty()) {
+			for (const auto& client : activeClients) {
 
-			// game paused or not in session, don't send data
-			if (payload.status == 0 || payload.status == 3) {
-				continue;
-			}
+				// More than 30s from the last message, client get disconnected
+				if (model.getElapsedSeconds(client.second) > 30) {
+					model.removeClient(client.first.addr);
+					continue;
+				}
 
-			res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&client.first.addr, sizeof(client.first.addr));
+				// game paused or not in session, don't send data
+				if (payload.status == 0 || payload.status == 3 || payload.status == 1) {
+					continue;
+				}
 
-			if (res == SOCKET_ERROR) {
-				int err = WSAGetLastError();
-				std::cout << "[SEND ERROR] Client irraggiungibile, errore: " << err << std::endl;
+				res = sendto(serverSocket, (const char*)&payload, sizeof(payload), 0, (sockaddr*)&client.first.addr, sizeof(client.first.addr));
+
+				if (res == SOCKET_ERROR) {
+					int err = WSAGetLastError();
+					std::cout << "[SEND ERROR] Client irraggiungibile, errore: " << err << std::endl;
+				}
+
 			}
-			
 		}
 
 		std::this_thread::sleep_until(nextTick);
