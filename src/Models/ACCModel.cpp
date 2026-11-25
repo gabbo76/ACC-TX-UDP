@@ -2,6 +2,13 @@
 #include "../include/Models/ACC/SharedFileOut.h"
 #include "../include/Models/ACC/ACCModel.hpp"
 
+uint64_t get_timestamp_us() {
+    using namespace std::chrono;
+    return duration_cast<microseconds>(
+        system_clock::now().time_since_epoch()
+    ).count();
+}
+
 ACCModel& ACCModel::getInstance() {
     std::lock_guard<std::mutex> lock(_instanceMutex);
     static ACCModel instance;
@@ -15,6 +22,9 @@ void ACCModel::updateData (void* data) {
 	graphicsData = rcvData->g;
 	physicsData = rcvData->p;
 	staticData = rcvData->s;
+    if (rcvData->g.status == AC_OFF || rcvData->g.status == AC_REPLAY) {
+        _needNewSession = true;
+    }
 }
 
 Packet ACCModel::getPacket() {
@@ -32,7 +42,27 @@ Packet ACCModel::getPacket() {
         s_snap = staticData;
     }
 
-    Packet packet;
+    Packet packet{};
+
+    if (g_snap.status != AC_LIVE) {
+        return packet;
+    }
+
+    if (_needNewSession || g_snap.session != _lastSession || g_snap.sessionIndex != _lastSessionIndex) {
+        _currentSessionId = static_cast<uint32_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now().time_since_epoch()
+            ).count()
+            );
+        _packetid = 0;
+        _lastSession = g_snap.session;
+        _lastSessionIndex = g_snap.sessionIndex;
+        _needNewSession.exchange(false);
+    }
+    packet.sessionId = _currentSessionId;
+    packet.packetId = _packetid++;
+
+	packet.timestamp = get_timestamp_us();
 
     packet.gas = p_snap.gas;
     packet.brake = p_snap.brake;

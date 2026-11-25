@@ -8,6 +8,7 @@
 #include <Windows.h>
 #include <ws2tcpip.h>
 #include <iostream>
+#include <chrono>
 
 struct ClientAddress {
     sockaddr_in addr;
@@ -20,7 +21,18 @@ struct ClientAddress {
 };
 
 // Struct of the pachet returned to the client, containing all the data we want to send
+#pragma push(pack, 1)
 struct _packet {
+
+    // packetId
+    uint32_t packetId = 0;
+
+    // timestamp
+    uint64_t timestamp;
+
+    // sessionId
+    uint32_t sessionId = 0;
+
     float gas = 0;
     float brake = 0;
     float fuel = 0;
@@ -75,6 +87,7 @@ struct _packet {
     int fuelXLap = 0;
 
 };
+#pragma pop(pack)
 
 typedef struct _packet Packet;
 
@@ -136,6 +149,11 @@ public:
         return _activeClients;
     }
 
+	bool isClientListEmpty() {
+		std::lock_guard<std::mutex> lock(_clientsMutex);
+		return _activeClients.empty();
+	}
+
 protected: 
     IDataModel() {}
 
@@ -150,6 +168,15 @@ protected:
 
     // Mutex for the instance
     static std::mutex _instanceMutex;
+
+	uint32_t _packetid = 0;
+
+    int _lastSession = 0;
+    int _lastSessionIndex = 0;
+
+    std::atomic<bool> _needNewSession{ true };
+
+	uint32_t _currentSessionId = 0;
 
 };
 
